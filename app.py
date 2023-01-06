@@ -9,10 +9,7 @@ import dash_bootstrap_components as dbc
 
 import pandas as pd
 
-df = pd.read_csv('./example_files/running-example.csv', sep=';')
-
 BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
-#external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 table_example = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/solar.csv')
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
@@ -31,67 +28,18 @@ sidebar = dbc.Nav(
     ])
 
 app.layout = dbc.Container(
-
-
-html.Div(children=[html.Div(
-        [
-            html.Div(
-                dcc.Link(
-                    f"{page['name']} - {page['path']}", href=page["relative_path"]
-                )
-            )
-            for page in dash.page_registry.values()
-        ]
-    ),
-    dash.page_container,
-    ### Input
-    html.H2(children='Input'),
-    dcc.Upload(
-id='upload-data',
-children=html.Div([
-    'Drag and Drop or ',
-    html.A('Select Event Log File')
-]),
-# Forbid multiple files to be uploaded
-multiple=False,
-style={
-            'width': '100%',
-            'height': '60px',
-            'lineHeight': '60px',
-            'borderWidth': '1px',
-            'borderStyle': 'dashed',
-            'borderRadius': '5px',
-            'textAlign': 'center',
-            'margin': '10px'
-        }),
-### Table
-html.Div(children='Your event log is displayed below.'),
-html.Div(id="output-data-upload", children=[]),
-dash_table.DataTable(df.to_dict('records'),
-    columns= [{"name": i, "id": i} for i in df.columns],
-    filter_action='native',
-    page_action='none',
-    style_table={'height': '300px', 'overflowY': 'auto'}),
-
-### Preprocessing
-html.H2(children='Preprocessing'),
-### Transformation
-html.H2(children='Transformation'),
-html.Div(children='Choose your favorite algorithmn and set parameters!'),
-dcc.Dropdown(
-['Alpha', 'Heuristic', 'Inductive'],
-'Alpha',
-clearable=False,
-id='demo-dropdown',
-style={
-    'width': '50%',
-    'margin': '10px'
-},
-),
-### Output
-html.Div(id='dd-output-container'),
-html.H2(children='Output')
-]))
+        html.Div(children=[html.Div(
+                [
+                    html.Div(
+                        dcc.Link(
+                            f"{page['name']} - {page['path']}", href=page["relative_path"]
+                        )
+                    )
+                    for page in dash.page_registry.values()
+                ]
+            ),
+            dash.page_container,
+        ]))
 
 def parse_contents(contents, filename, date):
     """Parse a dash upload component contents."""
@@ -140,13 +88,6 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
     """Called when file is uploaded."""
     print("Callback File upload called")
 
-
-
-    # if list_of_contents is not None:
-    #     children = [
-    #         parse_contents(c, n, d) for c, n, d in
-    #         zip(list_of_contents, list_of_names, list_of_dates)]
-    #     return children
 
 if __name__ == '__main__':
     app.run_server(debug=True)
