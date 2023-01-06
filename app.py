@@ -7,7 +7,6 @@ from dash.dependencies import Input, Output, State
 from dash import dcc, html, dash_table
 import dash_bootstrap_components as dbc
 
-import plotly.express as px
 import pandas as pd
 
 df = pd.read_csv('./example_files/running-example.csv', sep=';')
@@ -16,15 +15,35 @@ BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
 #external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 table_example = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/solar.csv')
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
 
 
-app.layout = html.Div(children=[
-    html.H1(children='Smart Home Process Mining'),
+sidebar = dbc.Nav(
+    [
+        dbc.NavLink(
+            [
+                html.Div(page["name"], className="ms-2"),
+            ],
+            href=page["path"],
+            active="exact",
+        )
+        for page in dash.page_registry.values()
+    ])
 
-    html.Div(children='''
-        A web application for Process Mining with your Smart home data.
-    '''),
+app.layout = dbc.Container(
+
+
+html.Div(children=[html.Div(
+        [
+            html.Div(
+                dcc.Link(
+                    f"{page['name']} - {page['path']}", href=page["relative_path"]
+                )
+            )
+            for page in dash.page_registry.values()
+        ]
+    ),
+    dash.page_container,
     ### Input
     html.H2(children='Input'),
     dcc.Upload(
@@ -72,13 +91,7 @@ style={
 ### Output
 html.Div(id='dd-output-container'),
 html.H2(children='Output')
-#, 
-# html.Div(id='output-data-upload'),
-#     dcc.Graph(
-#         id='example-graph',
-#         figure=fig
-#     )
-])
+]))
 
 def parse_contents(contents, filename, date):
     """Parse a dash upload component contents."""
