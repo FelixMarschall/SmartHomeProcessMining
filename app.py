@@ -17,14 +17,6 @@ BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
 table_example = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/solar.csv')
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
-# see https://plotly.com/python/px-arguments/ for more options
-# df = pd.DataFrame({
-#     "Fruit": ["Apples", "Oranges", "Bananas", "Apples", "Oranges", "Bananas"],
-#     "Amount": [4, 1, 2, 2, 4, 5],
-#     "City": ["SF", "SF", "SF", "Montreal", "Montreal", "Montreal"]
-# })
-
-# fig = px.bar(df, x="Fruit", y="Amount", color="City", barmode="group")
 
 
 app.layout = html.Div(children=[
@@ -58,7 +50,9 @@ html.Div(children='Your event log is displayed below.'),
 html.Div(id="output-data-upload", children=[]),
 dash_table.DataTable(df.to_dict('records'),
     columns= [{"name": i, "id": i} for i in df.columns],
-    filter_action="native",),
+    filter_action='native',
+    page_action='none',
+    style_table={'height': '300px', 'overflowY': 'auto'}),
 
 ### Preprocessing
 html.H2(children='Preprocessing'),
