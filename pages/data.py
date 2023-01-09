@@ -4,8 +4,7 @@ import pandas as pd
 
 dash.register_page(__name__,path="/data")
 
-#df = pd.read_csv('./example_files/running-example.csv', sep=';')
-
+df = pd.read_csv('./example_files/running-example.csv', sep=';')
 
 layout = html.Div([
     html.H1('Data'),
@@ -28,10 +27,10 @@ layout = html.Div([
                     'margin': '10px'
                 }),
     ### Table
-    html.Div(children='Your event log is displayed below.'),
+    html.Div(id="info-field", children='Your event log is displayed below.'),
     html.Div(id="output-data-upload", children=[]),
-    dash_table.DataTable(SmartHomeLog.get_data().to_dict('records'),
-        columns= [{"name": i, "id": i} for i in SmartHomeLog.get_data().columns],
+    dash_table.DataTable(df.to_dict('records'),
+        columns= [{"name": i, "id": i} for i in df.columns],
         filter_action='native',
         page_action='none',
         style_table={'height': '900px', 'overflowY': 'auto'}),

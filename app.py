@@ -1,6 +1,7 @@
 import base64
 import datetime
 import io
+import pm4py
 
 import dash
 from dash.dependencies import Input, Output, State
@@ -12,8 +13,11 @@ import pandas as pd
 BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
 table_example = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/solar.csv')
 
+data = pd.read_csv('./example_files/running-example.csv', sep=';')
+
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
 
+log = pm4py.read_xes('./example_files/running-example.xes')
 
 sidebar = dbc.Nav(
     [
@@ -87,7 +91,23 @@ def parse_contents(contents, filename, date):
 def update_output(list_of_contents, list_of_names, list_of_dates):
     """Called when file is uploaded."""
     print("Callback File upload called")
+    if list_of_contents is not None:
+        children = [
+            parse_contents(c, n, d) for c, n, d in
+            zip(list_of_contents, list_of_names, list_of_dates)]
+        return children
 
+
+@app.callback(
+    Output('container-button-basic', 'children'),
+    Input('mine-button', 'n_clicks'))
+def update_transformation(mine_button):
+    """Calles when transformation button is clicked."""
+    print("miner started")
+    log = pm4py.read_xes('./example_files/running-example.xes')
+    process_model = pm4py.discover_bpmn_inductive(data)
+    print("miner finished")
+    return html.Img()
 
 if __name__ == '__main__':
     app.run_server(debug=True)

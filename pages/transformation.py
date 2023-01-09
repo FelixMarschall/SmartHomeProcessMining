@@ -1,7 +1,11 @@
 import dash
 from dash import dcc,html
 
+import pandas as pd
+
 dash.register_page(__name__,path="/transformation")
+
+data = pd.read_csv('./example_files/running-example.csv', sep=';')
 
 
 layout = html.Div([
@@ -17,4 +21,9 @@ layout = html.Div([
         'width': '50%',
         'margin': '10px'
     }),
+    html.H2('Parameters'),
+    html.Button('Start mining', id='mine-button'),
+    html.Div(id='container-button-basic',
+             children='Enter a value and press submit'), 
+    
 ])
