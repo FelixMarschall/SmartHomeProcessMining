@@ -29,18 +29,13 @@ sidebar = dbc.Nav(
             active="exact",
         )
         for page in dash.page_registry.values()
-    ])
+    ], 
+    pills=True,
+    fill=True)
 
 app.layout = dbc.Container(
         html.Div(children=[html.Div(
-                [
-                    html.Div(
-                        dcc.Link(
-                            f"{page['name']} - {page['path']}", href=page["relative_path"]
-                        )
-                    )
-                    for page in dash.page_registry.values()
-                ]
+                sidebar
             ),
             dash.page_container,
         ]))
@@ -105,7 +100,8 @@ def update_transformation(mine_button):
     """Calles when transformation button is clicked."""
     print("miner started")
     log = pm4py.read_xes('./example_files/running-example.xes')
-    process_model = pm4py.discover_bpmn_inductive(data)
+    process_model = pm4py.discover_bpmn_inductive(log)
+    pm4py.save_vis_bpmn(process_model, "bpmn.png")
     print("miner finished")
     return html.Img()
 
