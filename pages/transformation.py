@@ -15,7 +15,7 @@ layout = html.Div([
     ['Alpha', 'Heuristic', 'Inductive', 'Fuzzy'],
     'Alpha',
     clearable=False,
-    id='demo-dropdown',
+    id='algo-dropdown',
     style={
         'width': '50%',
         'margin': '10px'
@@ -24,7 +24,7 @@ layout = html.Div([
     ['Petri Net', 'Process Tree', 'BPMN'],
     'Petri Net',
     clearable=False,
-    id='demo-dropdown',
+    id='graph-dropdown',
     style={
         'width': '50%',
         'margin': '10px'
@@ -41,3 +41,5 @@ layout = html.Div([
     html.Hr(),
 # html.Img(id= "bpmn", src=dash.get_asset_url("bpmn.png"), alt="BPMN Image", style={'width':'100%'}),
 ])
+
+
