@@ -1,4 +1,5 @@
 numpy
 pandas
 dash
+dash_bootstrap_components
 pm4py
