@@ -1,19 +1,16 @@
 import dash
 from dash import dcc,html
-
 import pandas as pd
 
 dash.register_page(__name__,path="/transformation")
-
-data = pd.read_csv('./example_files/running-example.csv', sep=';')
 
 layout = html.Div([
     html.H1('Transformation'),
     ### Transformation
     html.Div(children='Choose your favorite algorithmn and set parameters!'),
     dcc.Dropdown(
-    ['Alpha', 'Heuristic', 'Inductive', 'Fuzzy'],
-    'Alpha',
+    ['alpha', 'heuristic', 'inductive', 'fuzzy'],
+    'alpha',
     clearable=False,
     id='algo-dropdown',
     style={
@@ -36,14 +33,21 @@ layout = html.Div([
         ),
     html.H2('Parameters'),
     html.Button('Start mining', id='mine-button'),
+    html.Div(id='mining-duration'),
     html.Hr(),
     html.H2('Petri Net'),
     html.Div(id='graphs',
-             children=[html.Img(id= "bpmn", src=dash.get_asset_url("bpmn.png"), alt="BPMN Image", style={'width':'100%'})]),
-    html.Hr(),
-    html.H2('BPMN Graph'),
-    html.Img(id= "petrinet", src=dash.get_asset_url("net.svg"), alt="Petri Net Image", style={'width':'100%'}),
-    html.Hr(),
+             children=[
+                html.Img(id= "petrinet", src=dash.get_asset_url("pn.svg"), alt="Petri Net Image", style={'width':'100%'}),
+                html.Hr(),
+                html.H2('BPMN Graph'),
+                html.Img(id= "bpmn", src=dash.get_asset_url("bpmn.svg"), alt="BPMN Image", style={'width':'100%'}),
+                html.Hr(),
+                html.H2('Process Tree'),
+                html.Img(id= "processtree", src=dash.get_asset_url("pt.png"), alt="Process Tree", style={'width':'100%'}),
+                html.Hr(),
+    ]
+    ),
 ])
 
 

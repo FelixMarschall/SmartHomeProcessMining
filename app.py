@@ -14,7 +14,7 @@ import pandas as pd
 BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
 table_example = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/solar.csv')
 
-data = pd.read_csv('./example_files/running-example.csv', sep=';')
+# data = pd.read_csv('./example_files/running-example.csv', sep=';')
 log = pm4py.read_xes('./example_files/running-example.xes')
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
@@ -97,7 +97,10 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
 
 ### Transformation "start mining" Button
 @app.callback(
-    Output('graphs', 'children'),
+    Output('bpmn', 'src'),
+    Output('petrinet', 'src'),
+    Output('processtree', 'src'),
+    Output('mining-duration', 'children'),
     Output('loading-1', 'children'),
     Input('mine-button', 'n_clicks'),
     State('algo-dropdown', 'value'),
@@ -107,10 +110,29 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
 def update_transformation(value, algo, graph):
     """Calles when transformation button is clicked."""
     print("Callback 'start mining' button with value:", value, "and algo:", algo, "and graph:", graph)
-    process_model = pm4py.discover_bpmn_inductive(log)
-    pm4py.save_vis_bpmn(process_model, "assets/bpmn.png")
-    return html.Img(id= "bpmn", src=dash.get_asset_url("bpmn.png"), alt="BPMN Image", style={'width':'100%'}), None
 
+    start_time = time.perf_counter()
+
+    if algo == "alpha":
+        process_model, start, end = pm4py.discover_petri_net_alpha(log)
+    elif algo == "inductive":
+        process_model, start, end = pm4py.discover_petri_net_inductive(log)
+    elif algo == "heuristic":
+        process_model, start, end = pm4py.discover_petri_net_heuristics(log)
+    else:
+        raise ValueError("Algorithm not supported")
+
+    mining_duration = time.perf_counter() - start_time
+    mining_duration = "mining duration: "+ str(round(mining_duration,2)) + "s"
+    
+    pt = pm4py.convert_to_process_tree(process_model, start, end)
+    bpmn = pm4py.convert_to_bpmn(process_model, start, end)
+
+    pm4py.save_vis_bpmn(bpmn, "assets/bpmn.svg")
+    pm4py.save_vis_process_tree(pt, "assets/pt.png")
+    pm4py.save_vis_petri_net(process_model, start, end, "assets/pn.svg")
+
+    return dash.get_asset_url("bpmn.svg"), dash.get_asset_url("pn.svg"), dash.get_asset_url("pt.png"),mining_duration, None
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
