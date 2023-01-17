@@ -97,15 +97,18 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
 ### Transformation "start mining" Button
 @app.callback(
     Output('graphs', 'children'),
-    Input('mine_button', 'value')
+    Input('mine-button', 'n_clicks'),
+    State('algo-dropdown', 'value'),
+    State('graph-dropdown', 'value'),
+    prevent_initial_call=True
 )
-def update_transformation(mine_button):
+def update_transformation(value, algo, graph):
     """Calles when transformation button is clicked."""
-    print("Callback 'start mining' button")
+    print("Callback 'start mining' button with value:", value, "and algo:", algo, "and graph:", graph)
     process_model = pm4py.discover_bpmn_inductive(log)
-    pm4py.save_vis_bpmn(process_model, dash.get_asset_url("bpmn.png"))
+    pm4py.save_vis_bpmn(process_model, "assets/bpmn.png")
     print("miner finished")
-    return html.Img(id= "bpmn", src=dash.get_asset_url("bpmn.png"), alt="BPMN Image", style={'width':'100%'})
+    return html.Img(id= "bpmn", src="assets/bpmn.png", alt="BPMN Image", style={'width':'100%'})
 
 if __name__ == '__main__':
     app.run_server(debug=True)

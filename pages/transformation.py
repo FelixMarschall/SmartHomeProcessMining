@@ -33,13 +33,12 @@ layout = html.Div([
     html.Button('Start mining', id='mine-button'),
     html.Hr(),
     html.H2('Petri Net'),
-    html.Div(id='container-button-basic',
+    html.Div(id='graphs',
              children=[html.Img(id= "bpmn", src=dash.get_asset_url("bpmn.png"), alt="BPMN Image", style={'width':'100%'})]),
     html.Hr(),
     html.H2('BPMN Graph'),
     html.Img(id= "petrinet", src=dash.get_asset_url("net.svg"), alt="Petri Net Image", style={'width':'100%'}),
     html.Hr(),
-# html.Img(id= "bpmn", src=dash.get_asset_url("bpmn.png"), alt="BPMN Image", style={'width':'100%'}),
 ])
 
 
