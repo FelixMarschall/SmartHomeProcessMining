@@ -1,6 +1,7 @@
 import base64
 import datetime
 import io
+import time
 import pm4py
 
 import dash
@@ -97,6 +98,7 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
 ### Transformation "start mining" Button
 @app.callback(
     Output('graphs', 'children'),
+    Output('loading-1', 'children'),
     Input('mine-button', 'n_clicks'),
     State('algo-dropdown', 'value'),
     State('graph-dropdown', 'value'),
@@ -107,8 +109,8 @@ def update_transformation(value, algo, graph):
     print("Callback 'start mining' button with value:", value, "and algo:", algo, "and graph:", graph)
     process_model = pm4py.discover_bpmn_inductive(log)
     pm4py.save_vis_bpmn(process_model, "assets/bpmn.png")
-    print("miner finished")
-    return html.Img(id= "bpmn", src="assets/bpmn.png", alt="BPMN Image", style={'width':'100%'})
+    return html.Img(id= "bpmn", src=dash.get_asset_url("bpmn.png"), alt="BPMN Image", style={'width':'100%'}), None
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)

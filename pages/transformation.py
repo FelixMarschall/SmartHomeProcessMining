@@ -29,6 +29,11 @@ layout = html.Div([
         'width': '50%',
         'margin': '10px'
     }),
+    dcc.Loading(
+            id="loading-1",
+            type="circle",
+            children=html.Div(id="loading-output-1")
+        ),
     html.H2('Parameters'),
     html.Button('Start mining', id='mine-button'),
     html.Hr(),
