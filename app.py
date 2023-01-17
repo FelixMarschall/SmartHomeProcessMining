@@ -14,10 +14,10 @@ BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
 table_example = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/solar.csv')
 
 data = pd.read_csv('./example_files/running-example.csv', sep=';')
+log = pm4py.read_xes('./example_files/running-example.xes')
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
 
-log = pm4py.read_xes('./example_files/running-example.xes')
 
 sidebar = dbc.Nav(
     [
@@ -37,7 +37,7 @@ app.layout = dbc.Container(
         html.Div(children=[html.Div(
                 sidebar
             ),
-            dash.page_container,
+        dash.page_container,
         ]))
 
 def parse_contents(contents, filename, date):
@@ -78,14 +78,15 @@ def parse_contents(contents, filename, date):
     ])
 
 
-
+### Upload File Box
 @app.callback(Output('output-data-upload', 'children'),
               Input('upload-data', 'contents'),
               State('upload-data', 'filename'),
-              State('upload-data', 'last_modified'))
+              State('upload-data', 'last_modified'),
+              prevent_initial_call=True)
 def update_output(list_of_contents, list_of_names, list_of_dates):
     """Called when file is uploaded."""
-    print("Callback File upload called")
+    print("Callback 'File upload called'")
     if list_of_contents is not None:
         children = [
             parse_contents(c, n, d) for c, n, d in
@@ -93,17 +94,18 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
         return children
 
 
+### Transformation "start mining" Button
 @app.callback(
-    Output('container-button-basic', 'children'),
-    Input('mine-button', 'n_clicks'))
+    Output('graphs', 'children'),
+    Input('mine_button', 'value')
+)
 def update_transformation(mine_button):
     """Calles when transformation button is clicked."""
-    print("miner started")
-    log = pm4py.read_xes('./example_files/running-example.xes')
+    print("Callback 'start mining' button")
     process_model = pm4py.discover_bpmn_inductive(log)
-    pm4py.save_vis_bpmn(process_model, "bpmn.png")
+    pm4py.save_vis_bpmn(process_model, dash.get_asset_url("bpmn.png"))
     print("miner finished")
-    return html.Img()
+    return html.Img(id= "bpmn", src=dash.get_asset_url("bpmn.png"), alt="BPMN Image", style={'width':'100%'})
 
 if __name__ == '__main__':
     app.run_server(debug=True)
