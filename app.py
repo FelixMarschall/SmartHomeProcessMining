@@ -10,15 +10,16 @@ from dash.dependencies import Input, Output, State
 from dash import dcc, html, dash_table
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
-
 import pandas as pd
+
+# local imports
+import modelling.data_components as data_components
 
 BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
 
 # data = pd.read_csv('./example_files/running-example.csv', sep=';')
 example_log = pm4py.read_xes('./assets/running-example.xes')
 log = None
-print("New init")
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
 
@@ -62,18 +63,10 @@ def update_output(contents, list_of_names, list_of_dates):
         logger.debug("No log found, using example log")
         return html.Div(id ="data-table", children=[
         html.Div(id="info-field", children='Example log is displayed below.'),
-        dash_table.DataTable(example_log.to_dict('records'),
-        columns= [{"name": i, "id": i} for i in example_log.columns],
-        filter_action='native',
-        page_action='none',
-        style_table={'height': '900px', 'overflowY': 'auto'})
+        data_components.get_data_table(example_log)
     ]),
     elif contents is None:
-        return dash_table.DataTable(log.to_dict('records'),
-        columns= [{"name": i, "id": i} for i in log.columns],
-        filter_action='native',
-        page_action='none',
-        style_table={'height': '900px', 'overflowY': 'auto'})
+        return data_components.get_data_table(log)
 
     CSV_SEPERATOR = ','
     content_type, content_string = contents.split(CSV_SEPERATOR)
@@ -100,13 +93,7 @@ def update_output(contents, list_of_names, list_of_dates):
         logger.error(type(e).__name__ + " while reading file: " + str(e))
         raise PreventUpdate()
 
-    return dash_table.DataTable(log.to_dict('records'),
-        columns= [{"name": i, "id": i} for i in log.columns],
-        filter_action='native',
-        page_action='none',
-        style_table={'height': '900px', 'overflowY': 'auto'})
-
-    #return log.to_json(date_format='iso', orient='split')
+    return data_components.get_data_table(log)
 
 ### Transformation "start mining" Button
 @app.callback(
