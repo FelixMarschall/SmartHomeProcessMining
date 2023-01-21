@@ -2,6 +2,8 @@ import dash
 from dash import dcc,html
 import pandas as pd
 
+import page_components.components as components
+
 dash.register_page(__name__,path="/transformation")
 
 layout = html.Div([
@@ -33,11 +35,7 @@ layout = html.Div([
         ),
     html.H2('Parameters'),
     html.Button('Start mining', id='mine-button', 
-                    style={'width': '240px', 'height': '40px', 
-                   'cursor': 'pointer', 'border': '0px', 
-                   'border-radius': '5px', 'background-color': 
-                   'black', 'color': 'white', 'text-transform': 
-                   'uppercase', 'font-size': '15px'}),
+                    style=components.get_button_style()),
     html.Div(id='mining-duration'),
     html.Hr(),
     html.H2('Petri Net'),

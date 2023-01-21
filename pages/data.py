@@ -1,12 +1,10 @@
 import dash
 from dash import dcc,html, dash_table
 import pandas as pd
-import pm4py
+
+import page_components.data_components as data_components
 
 dash.register_page(__name__,path="/data")
-
-#df = pm4py.read_xes('./assets/running-example.xes')
-
 
 layout = html.Div([
     html.H1('Data'),
@@ -18,16 +16,7 @@ layout = html.Div([
         ]),
         # Forbid multiple files to be uploaded
         multiple=False,
-        style={
-                    'width': '100%',
-                    'height': '60px',
-                    'lineHeight': '60px',
-                    'borderWidth': '1px',
-                    'borderStyle': 'dashed',
-                    'borderRadius': '5px',
-                    'textAlign': 'center',
-                    'margin': '10px'
-                }),
+        style=data_components.get_upload_button_style()),
     ### Table
     html.Div(id ="data-table", children=[
         html.Div(id="info-field", children='Loading...'),

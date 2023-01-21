@@ -8,3 +8,15 @@ def get_data_table(log: pd.DataFrame) -> dash_table.DataTable:
         filter_action='native',
         page_action='none',
         style_table={'height': '900px', 'overflowY': 'auto'})
+
+def get_upload_button_style() -> dict:
+   return {
+            'width': '100%',
+            'height': '60px',
+            'lineHeight': '60px',
+            'borderWidth': '1px',
+            'borderStyle': 'dashed',
+            'borderRadius': '5px',
+            'textAlign': 'center',
+            'margin': '10px'
+        }
