@@ -32,7 +32,12 @@ layout = html.Div([
             children=html.Div(id="loading-output-1")
         ),
     html.H2('Parameters'),
-    html.Button('Start mining', id='mine-button'),
+    html.Button('Start mining', id='mine-button', 
+                    style={'width': '240px', 'height': '40px', 
+                   'cursor': 'pointer', 'border': '0px', 
+                   'border-radius': '5px', 'background-color': 
+                   'black', 'color': 'white', 'text-transform': 
+                   'uppercase', 'font-size': '15px'}),
     html.Div(id='mining-duration'),
     html.Hr(),
     html.H2('Petri Net'),
