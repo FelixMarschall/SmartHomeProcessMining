@@ -3,16 +3,17 @@ from dash import dcc,html, dash_table
 import dash_bootstrap_components as dbc
 
 
-def get_layout():
+def get_layout() -> dbc.Container:
+    sidebar = get_sidebar()
     return dbc.Container(
         html.Div(children=[html.Div(
-                get_sidebar(),
+                sidebar,
             ),
         dash.page_container,
         ]))
 
-def get_sidebar():
-    sidebar = dbc.Nav(
+def get_sidebar() -> dbc.Nav:
+    return dbc.Nav(
     [
         dbc.NavLink(
             [

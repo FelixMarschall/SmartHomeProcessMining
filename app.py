@@ -1,10 +1,9 @@
 import base64
-import datetime
 import io
 import time
-import pm4py
 import logging
 
+# imports for web app
 import dash
 from dash.dependencies import Input, Output, State
 from dash import dcc, html, dash_table
@@ -12,8 +11,12 @@ from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
 import pandas as pd
 
+# process mining imports
+import pm4py
+
 # local imports
-import modelling.data_components as data_components
+import page_components.data_components as data_components
+import page_components.app_components as app_components
 
 BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
 
@@ -27,26 +30,7 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-sidebar = dbc.Nav(
-    [
-        dbc.NavLink(
-            [
-                html.Div(page["name"], className="ms-2"),
-            ],
-            href=page["path"],
-            active="exact",
-        )
-        for page in dash.page_registry.values()
-    ], 
-    pills=True,
-    fill=True)
-
-app.layout = dbc.Container(
-        html.Div(children=[html.Div(
-                sidebar
-            ),
-        dash.page_container,
-        ]))
+app.layout = app_components.get_layout()
 
 ### Upload File Box
 @app.callback(Output('data-table', 'children'),
@@ -77,6 +61,7 @@ def update_output(contents, list_of_names, list_of_dates):
     try:
         if list_of_names.endswith('.csv'):
             UPLOAD_PATH = "assets/temp/uploaded.csv"
+
             f = open(UPLOAD_PATH, "w")
             f.write(decoded.decode('utf-8'))
             f.close()
@@ -105,7 +90,8 @@ def update_output(contents, list_of_names, list_of_dates):
     Input('mine-button', 'n_clicks'),
     State('algo-dropdown', 'value'),
     State('graph-dropdown', 'value'),
-    prevent_initial_call=True
+    prevent_initial_call=True 
+    #TODO: vill auf false, damit Bilder direkt neu geladen werden.
 )
 def update_transformation(value, algo, graph):
     """Calles when transformation button is clicked."""
