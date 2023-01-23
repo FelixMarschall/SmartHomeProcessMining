@@ -12,7 +12,6 @@ layout = html.Div([
     html.Div(children='Choose your favorite algorithmn and set parameters!'),
     dcc.Dropdown(
     ['alpha', 'heuristic', 'inductive', 'fuzzy'],
-    'alpha',
     clearable=False,
     id='algo-dropdown',
     style={

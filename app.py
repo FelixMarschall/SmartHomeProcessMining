@@ -85,9 +85,6 @@ def update_output(contents, list_of_names, list_of_dates):
 
 ### Transformation "start mining" Button
 @app.callback(
-    # Output('bpmn', 'src'),
-    # Output('petrinet', 'src'),
-    # Output('processtree', 'src'),
     Output('mining-duration', 'children'),
     Output('loading-1', 'children'),
     Output('graphs', 'children'),
@@ -146,8 +143,7 @@ def update_transformation(value, algo, graph):
     I1.text((0, 0), f"[{algo};{graph}]", fill=(255, 0, 0))
     img.save(f"assets/{pn_file_name}")
 
-
-    return  transformation_components.get_tranformation_output(dash.get_asset_url(pn_file_name), dash.get_asset_url(bpmn_file_name), dash.get_asset_url(pt_file_name)), mining_duration, None
+    return  mining_duration, None, transformation_components.get_tranformation_output(dash.get_asset_url(pn_file_name), dash.get_asset_url(bpmn_file_name), dash.get_asset_url(pt_file_name))
 
 if __name__ == '__main__':
     app.run_server(debug=False)
