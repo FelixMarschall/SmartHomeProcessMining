@@ -14,3 +14,9 @@ def get_tranformation_output(pn, bpmn, pt) -> html.Div:
         html.Img(id= "processtree", src=pt, alt="Process Tree", style={'width':'100%'}),
         html.Hr()
         ]
+
+def get_parameter_input_style():
+    return {
+        'margin-right': '20px',
+        'margin-left': '30px'
+    }
