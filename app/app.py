@@ -21,11 +21,15 @@ import page_components.data_components as data_components
 import page_components.app_components as app_components
 import page_components.transformation_components as transformation_components
 
+import os
 
 BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
 
+print(os.listdir('./'))
+
 # data = pd.read_csv('./example_files/running-example.csv', sep=';')
-example_log = pm4py.read_xes('./assets/running-example.xes')
+example_log = pm4py.read_xes('./running-example.xes')
+
 uploaded_log = None
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
@@ -156,18 +160,18 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     pt_file_name = "pt.png"
 
     try:
-        pm4py.save_vis_bpmn(bpmn, f"assets/{bpmn_file_name}")
-        pm4py.save_vis_process_tree(pt, f"assets/{pt_file_name}")
-        pm4py.save_vis_petri_net(process_model, start, end, f"assets/{pn_file_name}")
+        pm4py.save_vis_bpmn(bpmn, f"./{bpmn_file_name}")
+        pm4py.save_vis_process_tree(pt, f"./{pt_file_name}")
+        pm4py.save_vis_petri_net(process_model, start, end, f"./{pn_file_name}")
     except Exception as e:
         logger.error(type(e).__name__ + " while saving process model: " + str(e))
         raise PreventUpdate("Error while saving process model")
 
     # draw text on pn image
-    img = Image.open(f"assets/{pn_file_name}")
+    img = Image.open(f"./{pn_file_name}")
     I1 = ImageDraw.Draw(img)
     I1.text((0, 0), f"[{algo}]", fill=(255, 0, 0))
-    img.save(f"assets/{pn_file_name}")
+    img.save(f"./{pn_file_name}")
 
     return  mining_duration, None, transformation_components.get_tranformation_output(dash.get_asset_url(pn_file_name), dash.get_asset_url(bpmn_file_name), dash.get_asset_url(pt_file_name))
 
