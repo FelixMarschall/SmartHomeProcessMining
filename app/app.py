@@ -27,8 +27,10 @@ BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
 
 print(os.listdir('./'))
 
+PATH_ASSETS = "./app/assets/"
+
 # data = pd.read_csv('./example_files/running-example.csv', sep=';')
-example_log = pm4py.read_xes('./running-example.xes')
+example_log = pm4py.read_xes(PATH_ASSETS + 'running-example.xes')
 
 uploaded_log = None
 
@@ -68,14 +70,14 @@ def update_output(contents, list_of_names, list_of_dates):
     
     try:
         if list_of_names.endswith('.csv'):
-            UPLOAD_PATH = "assets/temp/uploaded.csv"
+            UPLOAD_PATH = PATH_ASSETS + "/temp/uploaded.csv"
             f = open(UPLOAD_PATH, "w")
             f.write(decoded.decode('utf-8'))
             f.close()
             uploaded_log = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
             logger.debug("upload file is csv log")
         elif list_of_names.endswith('.xes'):
-            UPLOAD_PATH = "assets/temp/uploaded.xes"
+            UPLOAD_PATH = PATH_ASSETS + "/temp/uploaded.xes"
             f = open(UPLOAD_PATH, "w")
             f.write(decoded.decode('utf-8'))
             f.close()
@@ -159,19 +161,23 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     bpmn_file_name = "bpmn.svg"
     pt_file_name = "pt.png"
 
+    pn_file_path = PATH_ASSETS + pn_file_name
+    bpmn_file_path = PATH_ASSETS + bpmn_file_name
+    pt_file_path = PATH_ASSETS + pt_file_name
+
     try:
-        pm4py.save_vis_bpmn(bpmn, f"./{bpmn_file_name}")
-        pm4py.save_vis_process_tree(pt, f"./{pt_file_name}")
-        pm4py.save_vis_petri_net(process_model, start, end, f"./{pn_file_name}")
+        pm4py.save_vis_bpmn(bpmn, bpmn_file_path)
+        pm4py.save_vis_process_tree(pt, pt_file_path)
+        pm4py.save_vis_petri_net(process_model, start, end, pn_file_path)
     except Exception as e:
         logger.error(type(e).__name__ + " while saving process model: " + str(e))
         raise PreventUpdate("Error while saving process model")
 
     # draw text on pn image
-    img = Image.open(f"./{pn_file_name}")
+    img = Image.open(pn_file_path)
     I1 = ImageDraw.Draw(img)
     I1.text((0, 0), f"[{algo}]", fill=(255, 0, 0))
-    img.save(f"./{pn_file_name}")
+    img.save(pn_file_path)
 
     return  mining_duration, None, transformation_components.get_tranformation_output(dash.get_asset_url(pn_file_name), dash.get_asset_url(bpmn_file_name), dash.get_asset_url(pt_file_name))
 
