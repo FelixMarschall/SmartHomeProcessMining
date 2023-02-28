@@ -1,4 +1,4 @@
-def get_button_style() -> dict[str, str]:
+def get_button_style():
     return {
         'width': '240px', 
         'height': '40px', 
