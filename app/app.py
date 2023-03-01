@@ -202,4 +202,4 @@ def update_parameters_visibility(algo):
         raise PreventUpdate("Visibility did not change.")
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True, host="0.0.0.0")
