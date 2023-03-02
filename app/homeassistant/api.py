@@ -28,7 +28,7 @@ class Api:
             self.is_ha_env = True
         except requests.exceptions.ConnectionError as e:
             self.is_ha_env = False
-            logging.error(f"API Logbook request failed with Supervisor Token (auto auth)")
+            logging.error(f"API request failed with Supervisor Token (auto auth)")
 
         if not self.is_ha_env:
             url = f"http://{host}:{port}/api/"
@@ -36,10 +36,14 @@ class Api:
                 "Authorization": 'Bearer ' + token,
                 "content-type": "application/json",
             }
-            response = requests.get(url, headers=headers)
+            try:
+                response = requests.get(url, headers=headers)
+            except requests.exceptions.ConnectionError as e:
+                logging.error(f"API request failed: cannot connect to Homeassistant API")
+                return None
 
             if response.status_code < 200 or response.status_code > 202:
-                logging.error(f"API Logbook request failed with personal token: {response.status_code}")
+                logging.error(f"API request failed with personal token: {response.status_code}")
                 raise requests.exceptions.ConnectionError("Cannot connect to Homeassistant API")
 
         return response.text
