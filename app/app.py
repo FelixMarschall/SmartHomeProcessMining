@@ -31,8 +31,6 @@ print("hhhhheeelooo", os.environ['SUPERVISOR_TOKEN'])
 
 BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
 
-print(os.listdir('./'))
-
 PATH_ASSETS = "./app/assets/"
 
 # data = pd.read_csv('./example_files/running-example.csv', sep=';')
