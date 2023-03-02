@@ -13,6 +13,9 @@ from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
 import pandas as pd
 
+# own modules
+from homeassistant import Api
+
 # process mining imports
 import pm4py
 
