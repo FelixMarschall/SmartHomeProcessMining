@@ -2,7 +2,6 @@ import requests
 import pandas as pd
 import logging
 
-
 internal_host = "http://supervisor/core/api/"
 host = "homeassistant.local"
 port = 8123
@@ -17,22 +16,21 @@ class Api:
     def __init__(self) -> None:
         # running on home assistant environment?
         pass
-    
+
     def ping(self):
         headers_auto_config = {
             "Authorization": 'Bearer ${SUPERVISOR_TOKEN}',
             "content-type": "application/json",
         }
 
-        global is_ha_env
         try:
             response = requests.get(internal_host, headers=headers_auto_config)
-            is_ha_env = True
+            self.is_ha_env = True
         except requests.exceptions.ConnectionError as e:
-            is_ha_env = False
+            self.is_ha_env = False
             logging.error(f"API Logbook request failed with Supervisor Token (auto auth)")
 
-        if not is_ha_env:
+        if not self.is_ha_env:
             url = f"http://{host}:{port}/api/"
             headers = {
                 "Authorization": 'Bearer ' + token,
@@ -43,6 +41,7 @@ class Api:
             if response.status_code < 200 or response.status_code > 202:
                 logging.error(f"API Logbook request failed with personal token: {response.status_code}")
                 raise requests.exceptions.ConnectionError("Cannot connect to Homeassistant API")
+
         return response.text
 
     def get_logbook(self):
