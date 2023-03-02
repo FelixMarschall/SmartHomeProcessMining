@@ -11,13 +11,14 @@ token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIzMzc5NDBmZmZlNWU0MWJiYm
 
 
 class Api:
-    is_ha_env = False
+    _is_ha_env = False
 
     def __init__(self) -> None:
         # running on home assistant environment?
         pass
-
-    def ping(self):
+    
+    @staticmethod
+    def ping():
         headers_auto_config = {
             "Authorization": 'Bearer ${SUPERVISOR_TOKEN}',
             "content-type": "application/json",
@@ -25,12 +26,12 @@ class Api:
 
         try:
             response = requests.get(internal_host, headers=headers_auto_config)
-            self.is_ha_env = True
+            is_ha_env = True
         except requests.exceptions.ConnectionError as e:
-            self.is_ha_env = False
+            is_ha_env = False
             logging.error(f"API request failed with Supervisor Token (auto auth)")
 
-        if not self.is_ha_env:
+        if not is_ha_env:
             url = f"http://{host}:{port}/api/"
             headers = {
                 "Authorization": 'Bearer ' + token,
@@ -48,6 +49,7 @@ class Api:
 
         return response.text
 
+    @staticmethod
     def get_logbook(self):
         '''Returns the logbook'''
         pass    
