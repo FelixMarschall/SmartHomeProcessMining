@@ -4,8 +4,6 @@ from dash import dcc, html
 
 dash.register_page(__name__,path="/")
 
-print(Api().ping())
-
 layout = html.Div([
     html.H1('Process Mining with Smart Home Data'),
     html.Div('Import your first log and start with process mining!'),

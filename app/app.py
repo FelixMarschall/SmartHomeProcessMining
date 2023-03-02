@@ -26,6 +26,8 @@ import page_components.transformation_components as transformation_components
 
 import os
 
+print("hhhhheeelooo", os.environ['SUPERVISOR_TOKEN'])
+
 BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
 
 print(os.listdir('./'))
