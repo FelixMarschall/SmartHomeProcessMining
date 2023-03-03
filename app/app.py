@@ -2,6 +2,7 @@ import base64
 import io
 import time
 import logging
+import glob
 from PIL import Image
 from PIL import ImageDraw
 
@@ -34,9 +35,9 @@ print("is_ha_env", Api._is_ha_env)
 BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
 
 PATH_ASSETS = "./app/assets/"
+PATH_IMAGES = PATH_ASSETS + "images/"
 
-# data = pd.read_csv('./example_files/running-example.csv', sep=';')
-example_log = pm4py.read_xes(PATH_ASSETS + 'running-example.xes')
+example_log = pm4py.read_xes(PATH_ASSETS + "running-example.xes")
 
 uploaded_log = None
 
@@ -45,6 +46,9 @@ app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages
 # set up logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
+# suffix image timestamp
+timestr = None
 
 app.layout = app_components.get_layout()
 
@@ -99,9 +103,12 @@ def update_output(contents, list_of_names, list_of_dates):
 
 ### Transformation "start mining" Button
 @app.callback(
+    Output('petrinet','src'),
+    Output('bpmn','src'),
+    Output('processtree','src'),
     Output('mining-duration', 'children'),
     Output('loading-1', 'children'),
-    Output('graphs', 'children'),
+    #Output('graphs', 'children'),
     Input('mine-button', 'n_clicks'),
     State('algo-dropdown', 'value'),
     # inductive algo
@@ -114,7 +121,6 @@ def update_output(contents, list_of_names, list_of_dates):
     State('min_dfg_occurrences', 'value'), #int
 
     prevent_initial_call=True
-    #TODO: vill auf false, damit Bilder direkt neu geladen werden.
 )
 def update_transformation(value, algo, noise_threshold, dependency_threshold, and_threshold, loop_two_threshold, min_act_count, min_dfg_occurrences):
     """Calles when transformation button is clicked."""
@@ -157,24 +163,36 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     logger.info(f"[{algo}] {mining_duration}")
 
     try:
+        # petri net conversion
         pt = pm4py.convert_to_process_tree(process_model, start, end)
         bpmn = pm4py.convert_to_bpmn(process_model, start, end)
     except Exception as e:
         logger.error(type(e).__name__ + " while converting process model: " + str(e))
         raise PreventUpdate()
 
-    pn_file_name = "pn.png"
-    bpmn_file_name = "bpmn.svg"
-    pt_file_name = "pt.png"
+    global timestr
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+
+    pn_file_name = f"pn_{timestr}.png"
+    bpmn_file_name = f"bpmn_{timestr}.svg"
+    pt_file_name = f"pt_{timestr}.svg"
 
     pn_file_path = PATH_ASSETS + pn_file_name
     bpmn_file_path = PATH_ASSETS + bpmn_file_name
     pt_file_path = PATH_ASSETS + pt_file_name
 
+    
+    # delete all images in assets
+    files = glob.glob(PATH_ASSETS +'*')
+    for i in files:
+        if ".png" in i or ".svg" in i:
+            os.remove(i)
+
     try:
+        # safe image to disk
+        pm4py.save_vis_petri_net(process_model, start, end, pn_file_path)
         pm4py.save_vis_bpmn(bpmn, bpmn_file_path)
         pm4py.save_vis_process_tree(pt, pt_file_path)
-        pm4py.save_vis_petri_net(process_model, start, end, pn_file_path)
     except Exception as e:
         logger.error(type(e).__name__ + " while saving process model: " + str(e))
         raise PreventUpdate("Error while saving process model")
@@ -185,27 +203,8 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     I1.text((0, 0), f"[{algo}]", fill=(255, 0, 0))
     img.save(pn_file_path)
 
-    return  mining_duration, None, transformation_components.get_tranformation_output(dash.get_asset_url(pn_file_name), dash.get_asset_url(bpmn_file_name), dash.get_asset_url(pt_file_name))
+    return  dash.get_asset_url(pn_file_name),dash.get_asset_url(bpmn_file_name),dash.get_asset_url(pt_file_name),mining_duration, None#, transformation_components.get_tranformation_output(pn_file_path, bpmn_file_path, pt_file_path)
 
-
-### Hide/Show Parameters for Transformation Algorithms
-@app.callback(
-    Output('alpha-parameters', 'hidden'),
-    Output('heuristic-parameters', 'hidden'),
-    Output('inductive-parameters', 'hidden'),
-    Input('algo-dropdown', 'value'),
-    prevent_initial_call=True)
-def update_parameters_visibility(algo):
-    """Calles when dropdown for transformation algorithm is changed."""
-
-    if algo == "alpha":
-        return False, True, True
-    elif algo == "inductive":
-        return True, False, True
-    elif algo == "heuristic":
-        return True, True, False
-    else:
-        raise PreventUpdate("Visibility did not change.")
 
 if __name__ == '__main__':
-    app.run_server(debug=True, host="0.0.0.0")
+    app.run_server(debug=False, host="0.0.0.0")

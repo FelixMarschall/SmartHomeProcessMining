@@ -1,5 +1,6 @@
 import dash
-from dash import dcc,html
+from dash import dcc,html, Input, Output, callback
+from dash.exceptions import PreventUpdate
 import pandas as pd
 
 import page_components.components as components
@@ -21,15 +22,6 @@ layout = html.Div([
         'width': '50%',
         'margin': '10px'
     }),
-    # dcc.Dropdown(
-    # ['Petri Net', 'Process Tree', 'BPMN'],
-    # 'Petri Net',
-    # clearable=False,
-    # id='graph-dropdown',
-    # style={
-    #     'width': '50%',
-    #     'margin': '10px'
-    # }),
     dcc.Loading(
             id="loading-1",
             type="circle",
@@ -84,3 +76,21 @@ layout = html.Div([
 ])
 
 
+### Hide/Show Parameters for Transformation Algorithms
+@callback(
+    Output('alpha-parameters', 'hidden'),
+    Output('heuristic-parameters', 'hidden'),
+    Output('inductive-parameters', 'hidden'),
+    Input('algo-dropdown', 'value'),
+    prevent_initial_call=True)
+def update_parameters_visibility(algo):
+    """Calles when dropdown for transformation algorithm is changed."""
+
+    if algo == "alpha":
+        return False, True, True
+    elif algo == "inductive":
+        return True, False, True
+    elif algo == "heuristic":
+        return True, True, False
+    else:
+        raise PreventUpdate("Visibility did not change.")
