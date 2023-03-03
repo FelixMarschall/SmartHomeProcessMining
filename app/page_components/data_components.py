@@ -7,7 +7,10 @@ def get_data_table(log: pd.DataFrame) -> dash_table.DataTable:
         columns= [{"name": i, "id": i} for i in log.columns],
         filter_action='native',
         page_action='none',
-        style_table={'height': '900px', 'overflowY': 'auto'})
+        style_table={
+      'height': '900px',
+      #'overflowY': 'auto'
+      })
 
 def get_upload_button_style() -> dict:
    return {

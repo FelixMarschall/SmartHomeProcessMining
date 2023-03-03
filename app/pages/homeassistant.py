@@ -8,7 +8,7 @@ from dash.dependencies import Input, Output
 from homeassistant import Api
 
 
-dash.register_page(__name__,path="/homesassistant")
+dash.register_page(__name__,path="/homesassistant",order=1)
 
 layout = html.Div([
     html.H1('Home Assistant Logbook'),

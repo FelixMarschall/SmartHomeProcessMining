@@ -6,7 +6,7 @@ import plotly.express as px
 
 import pm4py
 
-dash.register_page(__name__,path="/stats")
+dash.register_page(__name__,path="/stats", order=3)
 
 fig = go.Figure(data=[go.Scatter(x=[1, 2, 3], y=[4, 1, 2])])
 

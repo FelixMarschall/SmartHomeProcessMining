@@ -5,7 +5,7 @@ import pandas as pd
 import page_components.components as components
 import page_components.transformation_components as transformation_components
 
-dash.register_page(__name__,path="/transformation")
+dash.register_page(__name__,path="/transformation", order=4)
 
 layout = html.Div([
     html.H1('Transformation'),

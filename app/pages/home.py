@@ -1,7 +1,7 @@
 import dash
 from dash import dcc, html
 
-dash.register_page(__name__,path="/")
+dash.register_page(__name__,path="/",order=0)
 
 layout = html.Div([
     html.H1('Process Mining with Smart Home Data'),
