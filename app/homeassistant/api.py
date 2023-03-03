@@ -14,6 +14,7 @@ token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIzMzc5NDBmZmZlNWU0MWJiYm
 
 super_token = False
 if 'SUPERVISOR_TOKEN' in os.environ:
+    print("Found supervisor token!!!!")
     super_token = os.environ['SUPERVISOR_TOKEN']
 
 
