@@ -1,5 +1,4 @@
 import dash
-from homeassistant import Api
 from dash import dcc, html
 
 dash.register_page(__name__,path="/")

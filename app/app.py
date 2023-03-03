@@ -28,6 +28,9 @@ import os
 
 print("\n",os.environ,"\n")
 
+print("Api.ping():", Api.ping())
+print("is_ha_env", Api._is_ha_env)
+
 BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
 
 PATH_ASSETS = "./app/assets/"

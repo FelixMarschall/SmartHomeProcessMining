@@ -50,8 +50,3 @@ class Api:
                 raise requests.exceptions.ConnectionError("Cannot connect to Homeassistant API")
 
         return response.text
-
-    @staticmethod
-    def get_logbook(self):
-        '''Returns the logbook'''
-        pass    
