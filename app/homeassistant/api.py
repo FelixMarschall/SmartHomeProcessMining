@@ -36,12 +36,11 @@ class Api:
             response = None
             try:
                 response = requests.get(internal_host, headers=headers_auto_config)
-                _is_ha_env = True
+                #_is_ha_env = True
             except requests.exceptions.ConnectionError as e:
-                _is_ha_env = False
+                #_is_ha_env = False
                 logging.error(f"API request failed with Supervisor Token (auto auth)")
-
-        if not _is_ha_env:
+        else:
             headers = {
                 "Authorization": f'Bearer {token}',
                 "content-type": "application/json",
