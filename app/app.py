@@ -126,6 +126,9 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     """Calles when transformation button is clicked."""
     logger.debug(f"Callback 'start mining' button with value: {value} and algo: {algo}")
 
+    print("\n",os.environ,"\n")
+
+
     global uploaded_log
     if uploaded_log is None:
         uploaded_log = example_log
