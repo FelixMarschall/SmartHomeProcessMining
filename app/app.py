@@ -29,7 +29,7 @@ import os
 
 print("\n",os.environ,"\n")
 
-print("Absolute Path",os.path.abspath(""))
+print("Absolute Path",os.path.abspath(__file__))
 print("data exists", os.path.isfile("/data/options.json"))
 print("Api.ping():", Api.ping())
 
