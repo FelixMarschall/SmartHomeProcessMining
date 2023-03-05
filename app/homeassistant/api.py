@@ -8,21 +8,18 @@ host = "homeassistant.local"
 port = 8123
 internal_host = "http://supervisor/core/api/"
 url = f"http://{host}:{port}/api/"
-logbook_url = url + "logbook/"
+logbook_url = url + "logbook"
 
 timestamp = "2022-02-15T00:00:00+02:00"
 
-
 token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIzMzc5NDBmZmZlNWU0MWJiYmY4MDZmYzYzZmM0MjNhNSIsImlhdCI6MTY3NzcwNjg4MSwiZXhwIjoxOTkzMDY2ODgxfQ.IrgtgxwY1dKjTcNV59ZhX-URvptsQ_MmE6XsPN-23WA"
 
-if  os.path.isfile("/data/options.json"):
+if os.path.isfile("/data/options.json"):
     with open('/data/options.json') as json_file:
         options_config = json.load(json_file)
         if len(options_config['credential_secret']) >= 10:
-            token = options_config['credential_secret'] 
+            token = options_config['credential_secret']
             print("Individual token setted.")
-
-
 
 super_token = None
 if 'SUPERVISOR_TOKEN' in os.environ:
@@ -34,10 +31,10 @@ class Api:
     def __init__(self) -> None:
         # running on home assistant environment?
         pass
-    
+
     @staticmethod
     def ping():
-        if not super_token is None: 
+        if not super_token is None:
             headers_auto_config = {
                 "Authorization": f'Bearer {super_token}',
                 "content-type": "application/json",
@@ -61,29 +58,28 @@ class Api:
 
             if response.status_code < 200 or response.status_code > 202:
                 logging.error(f"API request failed with personal token: {response.status_code}")
-                raise requests.exceptions.ConnectionError("Cannot connect to Homeassistant API")
+                logging.error("Cannot connect to Homeassistant API")
 
         return response.text
-    
+
     @staticmethod
-    def get_logbook(start = None, end_time = "2099-12-31T00%3A00%3A00%2B02%3A00"):
-        header = None
+    def get_logbook(start=None, end_time="2099-12-31T00%3A00%3A00%2B02%3A00"):
+        headers = None
         if super_token is None:
-            header = headers = {
+            headers = {
                 "Authorization": f'Bearer {token}',
                 "content-type": "application/json",
             }
         else:
-            header = {
+            headers = {
                 "Authorization": f'Bearer {super_token}',
                 "content-type": "application/json",
             }
-        
+
         if start is None:
-            with requests.get(logbook_url) as r:
+            with requests.get(logbook_url, headers=headers) as r:
                 return r.text, r.status_code
         else:
-            with requests.get(f"{logbook_url}{timestamp}?end_time=2099-12-31T00%3A00%3A00%2B02%3A00") as r:
+            with requests.get(f"{logbook_url}{timestamp}?end_time=2099-12-31T00%3A00%3A00%2B02%3A00",
+                              headers=headers) as r:
                 return r.text, r.status_code
-
-        url_timestamp = f"http://{host}:{port}/api/logbook/{timestamp}?end_time=2099-12-31T00%3A00%3A00%2B02%3A00"
