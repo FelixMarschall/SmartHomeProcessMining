@@ -210,15 +210,19 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     Output("fetch_duration", "children"),
     Output("quickstats", "children"),
     Input("fetch-logbook", "n_clicks"),
-    prevent_initial_call=False
+    prevent_initial_call=True
 )
 def fetch_logbook(value):
     '''Fetches homeassistant logbook and prints in table'''
+    
     start_time = time.perf_counter()
     logbook_data, status_code = Api.get_logbook()
     end_time = time.perf_counter() - start_time
 
     df = pd.read_json(logbook_data)
+
+    global logbook
+    logbook = df
 
     quickstats = f"Logbook shape (row, cols): {df.shape}"
 

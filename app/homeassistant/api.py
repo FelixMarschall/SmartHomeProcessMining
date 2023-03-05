@@ -7,6 +7,7 @@ import json
 host = "homeassistant.local"
 port = 8123
 internal_host = "http://supervisor/core/api/"
+
 url = f"http://{host}:{port}/api/"
 logbook_url = url + "logbook"
 
@@ -14,6 +15,7 @@ timestamp = "2022-02-15T00:00:00+02:00"
 
 token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIzMzc5NDBmZmZlNWU0MWJiYmY4MDZmYzYzZmM0MjNhNSIsImlhdCI6MTY3NzcwNjg4MSwiZXhwIjoxOTkzMDY2ODgxfQ.IrgtgxwY1dKjTcNV59ZhX-URvptsQ_MmE6XsPN-23WA"
 
+# check if key store in options (Homeassistant)
 if os.path.isfile("/data/options.json"):
     with open('/data/options.json') as json_file:
         options_config = json.load(json_file)
@@ -21,35 +23,31 @@ if os.path.isfile("/data/options.json"):
             token = options_config['credential_secret']
             print("Individual token setted.")
 
-super_token = None
+# check if key stored in environment variables
+has_os_token = False
 if 'SUPERVISOR_TOKEN' in os.environ:
     print("Found supervisor token!!!!")
-    super_token = os.environ['SUPERVISOR_TOKEN']
+    has_os_token = True
+    url = internal_host
+    token = os.environ['SUPERVISOR_TOKEN']
 
-
-class Api:
-    def __init__(self) -> None:
-        # running on home assistant environment?
-        pass
-
-    @staticmethod
-    def ping():
-        if not super_token is None:
-            headers_auto_config = {
-                "Authorization": f'Bearer {super_token}',
-                "content-type": "application/json",
-            }
-
-            response = None
-            try:
-                response = requests.get(internal_host, headers=headers_auto_config)
-            except requests.exceptions.ConnectionError as e:
-                logging.error(f"API request failed with Supervisor Token (auto auth)")
-        else:
-            headers = {
+# create http headers
+headers = {
                 "Authorization": f'Bearer {token}',
                 "content-type": "application/json",
             }
+
+class Api:
+
+    @staticmethod
+    def ping():
+        if not has_os_token:
+            response = None
+            try:
+                response = requests.get(internal_host, headers=headers)
+            except requests.exceptions.ConnectionError as e:
+                logging.error(f"API request failed with Supervisor Token (auto auth)")
+        else:
             try:
                 response = requests.get(url, headers=headers)
             except requests.exceptions.ConnectionError as e:
@@ -64,18 +62,6 @@ class Api:
 
     @staticmethod
     def get_logbook(start=None, end_time="2099-12-31T00%3A00%3A00%2B02%3A00"):
-        headers = None
-        if super_token is None:
-            headers = {
-                "Authorization": f'Bearer {token}',
-                "content-type": "application/json",
-            }
-        else:
-            headers = {
-                "Authorization": f'Bearer {super_token}',
-                "content-type": "application/json",
-            }
-
         if start is None:
             with requests.get(logbook_url, headers=headers) as r:
                 return r.text, r.status_code
