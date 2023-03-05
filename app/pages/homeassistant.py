@@ -13,6 +13,11 @@ dash.register_page(__name__,path="/homesassistant",order=1)
 
 layout = html.Div([
     html.H1('Home Assistant Logbook'),
+    dcc.Loading(
+            id="loading-2",
+            type="circle",
+            children=html.Div(id="loading-output-2")
+        ),
     html.H3('Filter data'),
     html.Div([
         'Timerange',

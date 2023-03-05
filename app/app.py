@@ -203,18 +203,19 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     I1.text((0, 0), f"[{algo}]", fill=(255, 0, 0))
     img.save(pn_file_path)
 
-    return  dash.get_asset_url(pn_file_name),dash.get_asset_url(bpmn_file_name),dash.get_asset_url(pt_file_name),mining_duration, None#, transformation_components.get_tranformation_output(pn_file_path, bpmn_file_path, pt_file_path)
-
+    return  dash.get_asset_url(pn_file_name),dash.get_asset_url(bpmn_file_name),dash.get_asset_url(pt_file_name),mining_duration, None
 @app.callback(
     Output("logbook-data", "children"),
     Output("fetch_duration", "children"),
     Output("quickstats", "children"),
+    Output('loading-2', 'children'),
     Input("fetch-logbook", "n_clicks"),
-    prevent_initial_call=True
+    prevent_initial_call=False
 )
 def fetch_logbook(value):
     '''Fetches homeassistant logbook and prints in table'''
-    
+    time.sleep(5)
+
     start_time = time.perf_counter()
     logbook_data, status_code = Api.get_logbook()
     end_time = time.perf_counter() - start_time
@@ -226,7 +227,7 @@ def fetch_logbook(value):
 
     quickstats = f"Logbook shape (row, cols): {df.shape}"
 
-    return data_components.get_data_table(df), end_time, quickstats
+    return data_components.get_data_table(df), end_time, quickstats, None
 
 if __name__ == "__main__":
     app.run_server(debug=True, host="0.0.0.0")
