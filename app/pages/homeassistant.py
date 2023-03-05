@@ -2,11 +2,12 @@ import dash
 import pandas as pd
 
 from datetime import date
-from dash import Dash, dcc, html
+from dash import Dash, dcc, html, Input, Output, callback
 from dash.dependencies import Input, Output
 
-from homeassistant import Api
+import page_components.components as components
 
+from homeassistant import Api
 
 dash.register_page(__name__,path="/homesassistant",order=1)
 
@@ -25,5 +26,10 @@ layout = html.Div([
     html.Div(
         [dcc.Checklist(options=['Delete update. entities'])]
         ),
+    html.Button('Fetch Logbook', id='fetch-logbook', 
+                    style=components.get_button_style()),
     html.Hr(),
+    html.Div(id ="logbook-data", children=[
+        html.Div(id="info-field", children='Nothing fetched...'),
+    ])
 ])

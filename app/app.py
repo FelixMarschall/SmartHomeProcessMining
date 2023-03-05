@@ -118,7 +118,6 @@ def update_output(contents, list_of_names, list_of_dates):
     State('loop_two_threshold', 'value'), #int
     State('min_act_count', 'value'), #int
     State('min_dfg_occurrences', 'value'), #int
-
     prevent_initial_call=True
 )
 def update_transformation(value, algo, noise_threshold, dependency_threshold, and_threshold, loop_two_threshold, min_act_count, min_dfg_occurrences):
@@ -204,6 +203,15 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
 
     return  dash.get_asset_url(pn_file_name),dash.get_asset_url(bpmn_file_name),dash.get_asset_url(pt_file_name),mining_duration, None#, transformation_components.get_tranformation_output(pn_file_path, bpmn_file_path, pt_file_path)
 
+@app.callback(
+    Output("logbook-data", "children"),
+    Input("fetch-logbook", "n_clicks"),
+    prevent_initial_call=False
+)
+def fetch_logbook(value):
+    logbook_data = Api.get_logbook()
+
+    return ['Test']
 
 if __name__ == '__main__':
-    app.run_server(debug=False, host="0.0.0.0")
+    app.run_server(debug=True, host="0.0.0.0")

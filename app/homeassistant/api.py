@@ -8,6 +8,7 @@ host = "homeassistant.local"
 port = 8123
 internal_host = "http://supervisor/core/api/"
 url = f"http://{host}:{port}/api/"
+logbook_url = url + "logbook/"
 
 timestamp = "2022-02-15T00:00:00+02:00"
 
@@ -65,7 +66,7 @@ class Api:
         return response.text
     
     @staticmethod
-    def get_logbook(start, end_time = "2099-12-31T00%3A00%3A00%2B02%3A00"):
+    def get_logbook(start = None, end_time = "2099-12-31T00%3A00%3A00%2B02%3A00"):
         header = None
         if super_token is None:
             header = headers = {
@@ -77,5 +78,12 @@ class Api:
                 "Authorization": f'Bearer {super_token}',
                 "content-type": "application/json",
             }
+        
+        if start is None:
+            with requests.get(logbook_url) as r:
+                return r.text, r.status_code
+        else:
+            with requests.get(f"{logbook_url}{timestamp}?end_time=2099-12-31T00%3A00%3A00%2B02%3A00") as r:
+                return r.text, r.status_code
 
         url_timestamp = f"http://{host}:{port}/api/logbook/{timestamp}?end_time=2099-12-31T00%3A00%3A00%2B02%3A00"
