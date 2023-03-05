@@ -5,6 +5,7 @@ import time
 import logging
 import glob
 import json
+from datetime import date
 from PIL import Image
 from PIL import ImageDraw
 
@@ -30,7 +31,7 @@ import page_components.transformation_components as transformation_components
 
 # set up logger
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 logging.debug(os.environ)
 logging.info(f"options.json exists {os.path.isfile('/data/options.json')}")
@@ -210,9 +211,11 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     Output("quickstats", "children"),
     Output('loading-2', 'children'),
     Input("fetch-logbook", "n_clicks"),
+    State('logbook-date-picker-range', 'start_date'),
+    State('logbook-date-picker-range', 'end_date'),
     prevent_initial_call=False
 )
-def fetch_logbook(value):
+def fetch_logbook(value, start_date, end_date):
     '''Fetches homeassistant logbook and prints in table'''
     global logbook
 
@@ -221,18 +224,25 @@ def fetch_logbook(value):
         quickstats = f"Logbook shape (row, cols): {logbook.shape}"
         return data_components.get_data_table(logbook), "locally stored fetch loaded", quickstats, None
 
+    # if start_date is not None:
+    #     start_date_object = date.fromisoformat(start_date)
+    #     start_date_string = start_date_object.strftime('%B %d, %Y')
+    # if end_date is not None:
+    #     end_date_object = date.fromisoformat(end_date)
+    #     end_date_string = end_date_object.strftime('%B %d, %Y')
 
     start_time = time.perf_counter()
     logbook_data, status_code = Api.get_logbook()
-    end_time = time.perf_counter() - start_time
+    end_time = round(time.perf_counter() - start_time, 2)
+    end_time_str = end_time + " seconds"
 
     df = pd.read_json(logbook_data)
     logbook = df
 
     quickstats = f"Logbook shape (row, cols): {df.shape}"
 
-    logging.info(f"Fetched logbook in {round(end_time,2)} s with size (row, col) of {df.shape}")
-    return data_components.get_data_table(df), end_time, quickstats, None
+    logging.info(f"Fetched logbook in {end_time_str} with size (row, col) of {df.shape}")
+    return data_components.get_data_table(df), end_time_str, quickstats, None
 
 if __name__ == "__main__":
     app.run_server(debug=False, host="0.0.0.0")
