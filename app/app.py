@@ -4,6 +4,7 @@ import os
 import time
 import logging
 import glob
+import json
 from PIL import Image
 from PIL import ImageDraw
 
@@ -43,6 +44,7 @@ PATH_IMAGES = PATH_ASSETS + "images/"
 
 example_log = pm4py.read_xes(PATH_ASSETS + "running-example.xes")
 uploaded_log = None
+logbook = None
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
 
@@ -210,10 +212,13 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
 )
 def fetch_logbook(value):
     print("wurde geklickt")
-    logbook_data = Api.get_logbook()
+    logbook_data, status_code = Api.get_logbook()
 
-    print(logbook_data)
-    return ['Test']
+    df = pd.read_json(logbook_data)
+
+    print(df.columns)
+    print(status_code)
+    return data_components.get_data_table(df)
 
 if __name__ == '__main__':
     app.run_server(debug=True, host="0.0.0.0")
