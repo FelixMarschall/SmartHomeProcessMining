@@ -57,6 +57,7 @@ class Api:
     def get_logbook(start=None, end_time="2099-12-31T00%3A00%3A00%2B02%3A00"):
         """Returns the Logbook"""
         logbook_url = url + "logbook"
+        
         if start is None:
             with requests.get(logbook_url, headers=headers) as r:
                 return r.text, r.status_code
