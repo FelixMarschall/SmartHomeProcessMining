@@ -214,7 +214,7 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
 )
 def fetch_logbook(value):
     '''Fetches homeassistant logbook and prints in table'''
-
+    global logbook
     if fetch_logbook is None and logbook is None:
         raise PreventUpdate
 
@@ -224,7 +224,6 @@ def fetch_logbook(value):
 
     df = pd.read_json(logbook_data)
 
-    global logbook
     logbook = df
 
     quickstats = f"Logbook shape (row, cols): {df.shape}"
