@@ -209,8 +209,10 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     prevent_initial_call=False
 )
 def fetch_logbook(value):
+    print("wurde geklickt")
     logbook_data = Api.get_logbook()
 
+    print(logbook_data)
     return ['Test']
 
 if __name__ == '__main__':
