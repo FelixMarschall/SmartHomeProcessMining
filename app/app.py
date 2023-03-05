@@ -1,5 +1,6 @@
 import base64
 import io
+import os
 import time
 import logging
 import glob
@@ -25,31 +26,24 @@ import page_components.data_components as data_components
 import page_components.app_components as app_components
 import page_components.transformation_components as transformation_components
 
-import os
-
-print("\n",os.environ,"\n")
-
-try:
-    #print("Absolute Path",os.path.abspath(__file__))
-    print("data exists", os.path.isfile("/data/options.json"))
-    print("Api.ping():", Api.ping())
-except Exception as e:
-    print(e)
-
-BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
-
-PATH_ASSETS = "./app/assets/"
-PATH_IMAGES = PATH_ASSETS + "images/"
-
-example_log = pm4py.read_xes(PATH_ASSETS + "running-example.xes")
-
-uploaded_log = None
-
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
 
 # set up logger
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
+logging.debug(os.environ)
+logging.info(f"options.json exists {os.path.isfile('/data/options.json')}")
+logging.info(f"Api.ping(): {Api.ping()}")
+
+
+BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+PATH_ASSETS = "./app/assets/"
+PATH_IMAGES = PATH_ASSETS + "images/"
+
+example_log = pm4py.read_xes(PATH_ASSETS + "running-example.xes")
+uploaded_log = None
+
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
 
 # suffix image timestamp
 timestr = None

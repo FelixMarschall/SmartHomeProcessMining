@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 import logging
 import os
+import json
 
 host = "homeassistant.local"
 port = 8123
@@ -10,7 +11,16 @@ url = f"http://{host}:{port}/api/"
 
 timestamp = "2022-02-15T00:00:00+02:00"
 
+
 token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIzMzc5NDBmZmZlNWU0MWJiYmY4MDZmYzYzZmM0MjNhNSIsImlhdCI6MTY3NzcwNjg4MSwiZXhwIjoxOTkzMDY2ODgxfQ.IrgtgxwY1dKjTcNV59ZhX-URvptsQ_MmE6XsPN-23WA"
+if  os.path.isfile("/data/options.json"):
+    with open('data.json') as json_file:
+        options_config = json.load(json_file)
+        print(options_config)
+        if not options_config['credential_secret']:
+            token = options_config['credential_secret'] 
+
+
 
 super_token = None
 if 'SUPERVISOR_TOKEN' in os.environ:
