@@ -234,7 +234,7 @@ def fetch_logbook(value, start_date, end_date):
     start_time = time.perf_counter()
     logbook_data, status_code = Api.get_logbook()
     end_time = round(time.perf_counter() - start_time, 2)
-    end_time_str = end_time + " seconds"
+    end_time_str = f"{end_time} seconds"
 
     df = pd.read_json(logbook_data)
     logbook = df
