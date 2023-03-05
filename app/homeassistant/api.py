@@ -6,10 +6,8 @@ import json
 
 host = "homeassistant.local"
 port = 8123
-internal_host = "http://supervisor/core/api/"
 
 url = f"http://{host}:{port}/api/"
-logbook_url = url + "logbook"
 
 timestamp = "2022-02-15T00:00:00+02:00"
 
@@ -28,35 +26,31 @@ has_os_token = False
 if 'SUPERVISOR_TOKEN' in os.environ:
     print("Found supervisor token!!!!")
     has_os_token = True
-    url = internal_host
+    url = "http://supervisor/core/api/"
     token = os.environ['SUPERVISOR_TOKEN']
+
+logbook_url = url + "logbook"
 
 # create http headers
 headers = {
-                "Authorization": f'Bearer {token}',
-                "content-type": "application/json",
-            }
+    "Authorization": f'Bearer {token}',
+    "content-type": "application/json",
+}
+
 
 class Api:
 
     @staticmethod
     def ping():
-        if not has_os_token:
-            response = None
-            try:
-                response = requests.get(internal_host, headers=headers)
-            except requests.exceptions.ConnectionError as e:
-                logging.error(f"API request failed with Supervisor Token (auto auth)")
-        else:
-            try:
-                response = requests.get(url, headers=headers)
-            except requests.exceptions.ConnectionError as e:
-                logging.error(f"API request failed: cannot connect to Homeassistant API")
-                return None
+        response = None
+        try:
+            response = requests.get(url, headers=headers)
+        except requests.exceptions.ConnectionError as e:
+            logging.error(f"API request failed: cannot connect to Homeassistant API")
+            return None
 
-            if response.status_code < 200 or response.status_code > 202:
-                logging.error(f"API request failed with personal token: {response.status_code}")
-                logging.error("Cannot connect to Homeassistant API")
+        if response.status_code < 200 or response.status_code > 202:
+            logging.error(f"API request failed with token: {response.status_code}")
 
         return response.text
 
