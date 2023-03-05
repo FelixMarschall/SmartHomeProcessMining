@@ -29,9 +29,12 @@ import os
 
 print("\n",os.environ,"\n")
 
-print("Absolute Path",os.path.abspath(__file__))
-print("data exists", os.path.isfile("/data/options.json"))
-print("Api.ping():", Api.ping())
+try:
+    #print("Absolute Path",os.path.abspath(__file__))
+    print("data exists", os.path.isfile("/data/options.json"))
+    print("Api.ping():", Api.ping())
+except Exception as e:
+    print(e)
 
 BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
 
