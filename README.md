@@ -12,7 +12,7 @@ Uses Process Mining to extract Smart Home information from an Event Log.
 1. `git clone https://github.com/FelixMarschall/SmartHomeProcessMining`
 2. `cd SmartHomeProcessMining/`
 3. `pip install -r requirements.txt`
-4. `python3 /app/app.py`
+4. `python3 app/app.py`
 
 ## Home-Assistant add-on installation
 https://github.com/FelixMarschall/HA_ProcessMining_Addon
