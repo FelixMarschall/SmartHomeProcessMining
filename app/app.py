@@ -235,4 +235,4 @@ def fetch_logbook(value):
     return data_components.get_data_table(df), end_time, quickstats, None
 
 if __name__ == "__main__":
-    app.run_server(debug=False) , host="0.0.0.0")
+    app.run_server(debug=False, host="0.0.0.0")
