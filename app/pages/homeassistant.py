@@ -29,6 +29,8 @@ layout = html.Div([
     html.Button('Fetch Logbook', id='fetch-logbook', 
                     style=components.get_button_style()),
     html.Hr(),
+    html.Div(id = "fetch_duration"),
+    html.Div(id = "quickstats"),
     html.Div(id ="logbook-data", children=[
         html.Div(id="info-field", children='Nothing fetched...'),
     ])
