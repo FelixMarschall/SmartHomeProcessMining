@@ -3,10 +3,16 @@ Uses Process Mining to extract Smart Home information from an Event Log.
 
 
 ## Local installation
-Application which depends on Dash and PM4Py.
+### Requirements
+- Python3 with pip
+- Graphviz installation.
 
-PM4py needs GraphViz for visualisation.
+### Installation
 
+1. `git clone https://github.com/FelixMarschall/SmartHomeProcessMining`
+2. `cd SmartHomeProcessMining/`
+3. `pip install -r requirements.txt`
+4. `python3 /app/app.py`
 
 ## Home-Assistant add-on installation
 https://github.com/FelixMarschall/HA_ProcessMining_Addon
