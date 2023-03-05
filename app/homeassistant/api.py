@@ -30,8 +30,6 @@ if 'SUPERVISOR_TOKEN' in os.environ:
 
 
 class Api:
-    _is_ha_env = False
-
     def __init__(self) -> None:
         # running on home assistant environment?
         pass
@@ -47,9 +45,7 @@ class Api:
             response = None
             try:
                 response = requests.get(internal_host, headers=headers_auto_config)
-                #_is_ha_env = True
             except requests.exceptions.ConnectionError as e:
-                #_is_ha_env = False
                 logging.error(f"API request failed with Supervisor Token (auto auth)")
         else:
             headers = {

@@ -35,6 +35,7 @@ logging.debug(os.environ)
 logging.info(f"options.json exists {os.path.isfile('/data/options.json')}")
 logging.info(f"Api.ping(): {Api.ping()}")
 
+print("Api.ping():" , Api.ping())
 
 BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
 PATH_ASSETS = "./app/assets/"
@@ -123,9 +124,6 @@ def update_output(contents, list_of_names, list_of_dates):
 def update_transformation(value, algo, noise_threshold, dependency_threshold, and_threshold, loop_two_threshold, min_act_count, min_dfg_occurrences):
     """Calles when transformation button is clicked."""
     logger.debug(f"Callback 'start mining' button with value: {value} and algo: {algo}")
-
-    print("\n",os.environ,"\n")
-
 
     global uploaded_log
     if uploaded_log is None:
