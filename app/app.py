@@ -214,7 +214,9 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
 )
 def fetch_logbook(value):
     '''Fetches homeassistant logbook and prints in table'''
-    time.sleep(5)
+
+    if fetch_logbook is None and logbook is None:
+        raise PreventUpdate
 
     start_time = time.perf_counter()
     logbook_data, status_code = Api.get_logbook()
