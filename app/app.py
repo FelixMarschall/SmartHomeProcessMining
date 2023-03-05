@@ -220,9 +220,9 @@ def fetch_logbook(value):
 
     df = pd.read_json(logbook_data)
 
-    quickstats = f"Logbook shape (row, cols): {logbook_data}, "
+    quickstats = f"Logbook shape (row, cols): {df.shape}"
 
     return data_components.get_data_table(df), end_time, quickstats
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run_server(debug=True, host="0.0.0.0")
