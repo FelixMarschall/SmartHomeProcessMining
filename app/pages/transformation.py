@@ -1,6 +1,8 @@
 import dash
 from dash import dcc,html, Input, Output, callback
 from dash.exceptions import PreventUpdate
+import dash_bootstrap_components as dbc
+
 import pandas as pd
 
 import page_components.components as components
@@ -59,6 +61,12 @@ layout = html.Div([
     html.Button('Start mining', id='mine-button', 
                     style=components.get_button_style()),
     html.Div(id='mining-duration'),
+    dbc.Alert(
+            "Did not work with this algorithm and parameters!",
+            id="mining-error",
+            is_open=False,
+            color="danger"
+            ),
     html.Div(id='graphs',
              children=[
                 html.Hr(),
