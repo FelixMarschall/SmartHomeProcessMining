@@ -243,6 +243,7 @@ def fetch_logbook(value, start_date, end_date):
     #     end_date_string = end_date_object.strftime('%B %d, %Y')
 
     df = pd.read_json(logbook_data)
+    print("Size of array in bytes:", df.memory_usage(index=True).sum())
     logbook = df
 
     quickstats = f"Logbook shape (row, cols): {df.shape}"
