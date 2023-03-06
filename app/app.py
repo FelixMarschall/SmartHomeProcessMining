@@ -250,7 +250,8 @@ def fetch_logbook(value, start_date, end_date, delete_update_entries):
     df[df.select_dtypes(['object']).columns] = df.select_dtypes(['object']).apply(lambda x: x.astype('category'))
     df_size = round(df.memory_usage(index=True).sum()/(1000*1000), 2)
     
-
+    if not delete_update_entries is None:
+        df = df[df.entity_id.str.contains("update.") == False]
 
     logbook = df
 
