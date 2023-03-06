@@ -22,8 +22,7 @@ def get_logbook_table(log: pd.DataFrame) -> dash_table.DataTable:
         export_headers='display',
         virtualization=True,
         style_table={
-      'height': '1080px',
-      #'overflowY': 'auto' # activates scroll within table
+      'height': 1000,
       })
 
 def get_upload_button_style() -> dict:
