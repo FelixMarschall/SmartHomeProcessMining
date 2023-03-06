@@ -262,4 +262,4 @@ def fetch_logbook(value, start_date, end_date, delete_update_entries):
 
 if __name__ == "__main__":
     logging.info("Starting dash server...")
-    app.run_server(debug=False)#, host="0.0.0.0")
+    app.run_server(debug=False, host="0.0.0.0")
