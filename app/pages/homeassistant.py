@@ -23,10 +23,9 @@ layout = html.Div([
         'Timerange',
         dcc.DatePickerRange(
         id = "logbook-date-picker-range",
-        month_format='M-D-Y-Q',
-        end_date_placeholder_text='M-D-Y-Q',
-        start_date_placeholder_text='M-D-Y-Q',
-        min_date_allowed=date(2013, 8, 5),
+        month_format='D-M-Y',
+        end_date_placeholder_text='D/M/Y',
+        start_date_placeholder_text='D/M/Y',
         clearable=True,
         )
     ]),

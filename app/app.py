@@ -251,4 +251,5 @@ def fetch_logbook(value, start_date, end_date):
     return data_components.get_data_table(df), end_time_str, quickstats, None
 
 if __name__ == "__main__":
-    app.run_server(debug=False, host="0.0.0.0")
+    logging.info("Starting dash server...")
+    app.run_server(debug=True, host="0.0.0.0")
