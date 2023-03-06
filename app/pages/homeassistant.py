@@ -30,7 +30,7 @@ layout = html.Div([
         )
     ]),
     html.Div(
-        [dcc.Checklist(options=['Delete update. entities'])]
+        [dcc.Checklist(id="delete_update_entries", options=['Delete update. entities'])]
         ),
     html.Button('Fetch Logbook', id='fetch-logbook', 
                     style=components.get_button_style()),

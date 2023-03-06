@@ -214,12 +214,13 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     Input("fetch-logbook", "n_clicks"),
     State('logbook-date-picker-range', 'start_date'),
     State('logbook-date-picker-range', 'end_date'),
+    State('delete_update_entries', 'value'),
     prevent_initial_call=False
 )
-def fetch_logbook(value, start_date, end_date):
+def fetch_logbook(value, start_date, end_date, delete_update_entries):
     '''Fetches homeassistant logbook and prints in table'''
     global logbook
-
+    print("delete_update_entries",delete_update_entries)
     if not logbook is None and value is None:
         # use previous fetch
         quickstats = f"Logbook shape (row, cols): {logbook.shape}"
@@ -249,6 +250,8 @@ def fetch_logbook(value, start_date, end_date):
     df[df.select_dtypes(['object']).columns] = df.select_dtypes(['object']).apply(lambda x: x.astype('category'))
     df_size = round(df.memory_usage(index=True).sum()/(1000*1000), 2)
     
+
+
     logbook = df
 
     quickstats = f"Logbook shape (row, cols): {df.shape}; RAW Json Size in MB: {df_json_size}, panda framework size: {df_size}"
@@ -258,4 +261,4 @@ def fetch_logbook(value, start_date, end_date):
 
 if __name__ == "__main__":
     logging.info("Starting dash server...")
-    app.run_server(debug=False, host="0.0.0.0")
+    app.run_server(debug=False)#, host="0.0.0.0")
