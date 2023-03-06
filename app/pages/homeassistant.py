@@ -5,6 +5,8 @@ from datetime import date
 from dash import Dash, dcc, html, Input, Output, callback
 from dash.dependencies import Input, Output
 import dash_daq as daq
+import dash_bootstrap_components as dbc
+
 
 import page_components.components as components
 
@@ -43,6 +45,12 @@ layout = html.Div([
     html.Button('Fetch Logbook', id='fetch-logbook', 
                     style=components.get_button_style()),
     html.Hr(),
+    dbc.Alert(
+            "Fetch was successfull!",
+            id="alert-fetch",
+            is_open=False,
+            duration=4000
+            ),
     html.Div(id = "fetch_duration"),
     html.Div(id = "quickstats"),
     html.Div(id ="logbook-data", children=[

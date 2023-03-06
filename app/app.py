@@ -46,7 +46,7 @@ example_log = pm4py.read_xes(PATH_ASSETS + "running-example.xes")
 uploaded_log = None
 logbook = None
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG], use_pages=True)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
 
 # suffix image timestamp
 timestr = None
@@ -209,6 +209,7 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     Output("logbook-data", "children"),
     Output("fetch_duration", "children"),
     Output("quickstats", "children"),
+    Output("alert-fetch","is_open"),
     Output('loading-2', 'children'),
     Input("fetch-logbook", "n_clicks"),
     State('logbook-date-picker-range', 'start_date'),
@@ -223,7 +224,7 @@ def fetch_logbook(value, start_date, end_date, delete_update_entries):
     if not logbook is None and value is None:
         # use previous fetch
         quickstats = f"Logbook shape (row, cols): {logbook.shape}"
-        return data_components.get_logbook_table(logbook), "locally stored fetch loaded", quickstats, None
+        return data_components.get_logbook_table(logbook), "locally stored fetch loaded", quickstats, False, None
 
     logbook_data = None
     status_code = None
@@ -243,6 +244,11 @@ def fetch_logbook(value, start_date, end_date, delete_update_entries):
     #     end_date_string = end_date_object.strftime('%B %d, %Y')
 
     df = pd.read_json(logbook_data)
+
+    if df.empty:
+        logging.error("Empty Logbook fetch, Fetch without start date lists only events from today.")
+        raise PreventUpdate()
+
     
     # optimize storage
     df_json_size = round(df.memory_usage(index=True).sum()/(1000*1000), 2)
@@ -257,8 +263,8 @@ def fetch_logbook(value, start_date, end_date, delete_update_entries):
     quickstats = f"Logbook shape (row, cols): {df.shape}; Panda Framework size: {df_size}"
 
     logging.info(f"Fetched logbook in {end_time_str} with size (row, col) of {df.shape}")
-    return data_components.get_logbook_table(df), end_time_str, quickstats, None
+    return data_components.get_logbook_table(df), end_time_str, quickstats, True, None
 
 if __name__ == "__main__":
     logging.info("Starting dash server...")
-    app.run_server(debug=False, host="0.0.0.0")
+    app.run_server(debug=True, host="0.0.0.0")
