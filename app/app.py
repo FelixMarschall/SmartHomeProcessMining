@@ -243,10 +243,15 @@ def fetch_logbook(value, start_date, end_date):
     #     end_date_string = end_date_object.strftime('%B %d, %Y')
 
     df = pd.read_json(logbook_data)
-    print("Size of array in bytes:", df.memory_usage(index=True).sum())
+    
+    # optimize storage
+    df_json_size = df.memory_usage(index=True).sum()/(1000*1000)
+    df[df.select_dtypes(['object']).columns] = df.select_dtypes(['object']).apply(lambda x: x.astype('category'))
+    df_size = df.memory_usage(index=True).sum()/(1000*1000)
+    
     logbook = df
 
-    quickstats = f"Logbook shape (row, cols): {df.shape}"
+    quickstats = f"Logbook shape (row, cols): {df.shape}; RAW Json Size in MB: {df_json_size}, panda framework size: {df_size}"
 
     logging.info(f"Fetched logbook in {end_time_str} with size (row, col) of {df.shape}")
     return data_components.get_data_table(df), end_time_str, quickstats, None
