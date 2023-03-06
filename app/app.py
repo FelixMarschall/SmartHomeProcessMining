@@ -214,7 +214,7 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     Input("fetch-logbook", "n_clicks"),
     State('logbook-date-picker-range', 'start_date'),
     State('logbook-date-picker-range', 'end_date'),
-    State('delete_update_entries', 'value'),
+    State('delete_update_entries', 'on'),
     prevent_initial_call=False
 )
 def fetch_logbook(value, start_date, end_date, delete_update_entries):
@@ -250,12 +250,12 @@ def fetch_logbook(value, start_date, end_date, delete_update_entries):
     df[df.select_dtypes(['object']).columns] = df.select_dtypes(['object']).apply(lambda x: x.astype('category'))
     df_size = round(df.memory_usage(index=True).sum()/(1000*1000), 2)
     
-    if not delete_update_entries is None:
+    if delete_update_entries:
         df = df[df.entity_id.str.contains("update.") == False]
 
     logbook = df
 
-    quickstats = f"Logbook shape (row, cols): {df.shape}; RAW Json Size in MB: {df_json_size}, panda framework size: {df_size}"
+    quickstats = f"Logbook shape (row, cols): {df.shape}; Panda Framework size: {df_size}"
 
     logging.info(f"Fetched logbook in {end_time_str} with size (row, col) of {df.shape}")
     return data_components.get_logbook_table(df), end_time_str, quickstats, None

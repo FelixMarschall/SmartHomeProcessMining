@@ -4,6 +4,7 @@ import pandas as pd
 from datetime import date
 from dash import Dash, dcc, html, Input, Output, callback
 from dash.dependencies import Input, Output
+import dash_daq as daq
 
 import page_components.components as components
 
@@ -29,9 +30,15 @@ layout = html.Div([
         clearable=True,
         )
     ]),
-    html.Div(
-        [dcc.Checklist(id="delete_update_entries", options=['Delete update. entities'])]
-        ),
+    html.Hr(),
+    html.Div([
+        daq.BooleanSwitch(
+        id='delete_update_entries',
+        label="Delete Update Entities",
+        labelPosition="left",
+        on=False),
+    ]),
+    html.Hr(),
     html.Button('Fetch Logbook', id='fetch-logbook', 
                     style=components.get_button_style()),
     html.Hr(),
