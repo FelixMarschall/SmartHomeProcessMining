@@ -47,9 +47,17 @@ layout = html.Div([
     html.Hr(),
     dbc.Alert(
             "Fetch was successfull!",
-            id="alert-fetch",
+            id="alert-fetch-succ",
             is_open=False,
-            duration=4000
+            duration=4000,
+            color="success"
+            ),
+    dbc.Alert(
+            "Fetch is empty, set an earlier start date!",
+            id="alert-fetch-fail",
+            is_open=False,
+            duration=4000,
+            color="warning"
             ),
     html.Div(id = "fetch_duration"),
     html.Div(id = "quickstats"),

@@ -209,7 +209,8 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     Output("logbook-data", "children"),
     Output("fetch_duration", "children"),
     Output("quickstats", "children"),
-    Output("alert-fetch","is_open"),
+    Output("alert-fetch-succ","is_open"),
+    Output("alert-fetch-fail","is_open"),
     Output('loading-2', 'children'),
     Input("fetch-logbook", "n_clicks"),
     State('logbook-date-picker-range', 'start_date'),
@@ -224,7 +225,7 @@ def fetch_logbook(value, start_date, end_date, delete_update_entries):
     if not logbook is None and value is None:
         # use previous fetch
         quickstats = f"Logbook shape (row, cols): {logbook.shape}"
-        return data_components.get_logbook_table(logbook), "locally stored fetch loaded", quickstats, False, None
+        return data_components.get_logbook_table(logbook), "locally stored fetch loaded", quickstats, False, False, None
 
     logbook_data = None
     status_code = None
@@ -247,7 +248,7 @@ def fetch_logbook(value, start_date, end_date, delete_update_entries):
 
     if df.empty:
         logging.error("Empty Logbook fetch, Fetch without start date lists only events from today.")
-        raise PreventUpdate()
+        return None, None, None, False, True, None
 
     
     # optimize storage
@@ -263,8 +264,8 @@ def fetch_logbook(value, start_date, end_date, delete_update_entries):
     quickstats = f"Logbook shape (row, cols): {df.shape}; Panda Framework size: {df_size}"
 
     logging.info(f"Fetched logbook in {end_time_str} with size (row, col) of {df.shape}")
-    return data_components.get_logbook_table(df), end_time_str, quickstats, True, None
+    return data_components.get_logbook_table(df), end_time_str, quickstats, True, False, None
 
 if __name__ == "__main__":
     logging.info("Starting dash server...")
-    app.run_server(debug=True, host="0.0.0.0")
+    app.run_server(debug=False, host="0.0.0.0")
