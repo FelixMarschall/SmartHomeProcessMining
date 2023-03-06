@@ -205,6 +205,7 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     img.save(pn_file_path)
 
     return  dash.get_asset_url(pn_file_name),dash.get_asset_url(bpmn_file_name),dash.get_asset_url(pt_file_name),mining_duration, None
+
 @app.callback(
     Output("logbook-data", "children"),
     Output("fetch_duration", "children"),
@@ -224,17 +225,21 @@ def fetch_logbook(value, start_date, end_date):
         quickstats = f"Logbook shape (row, cols): {logbook.shape}"
         return data_components.get_data_table(logbook), "locally stored fetch loaded", quickstats, None
 
-    # if start_date is not None:
-    #     start_date_object = date.fromisoformat(start_date)
-    #     start_date_string = start_date_object.strftime('%B %d, %Y')
+    logbook_data, status_code = None
+    start_time = time.perf_counter()
+
+    if start_date is not None:
+        start_date_object = date.fromisoformat(start_date)
+        logbook_data, status_code = Api.get_logbook(start_date_object)
+    else:
+        logbook_data, status_code = Api.get_logbook()
+    
+    end_time = round(time.perf_counter() - start_time, 2)
+    end_time_str = f"{end_time} seconds"
+    
     # if end_date is not None:
     #     end_date_object = date.fromisoformat(end_date)
     #     end_date_string = end_date_object.strftime('%B %d, %Y')
-
-    start_time = time.perf_counter()
-    logbook_data, status_code = Api.get_logbook()
-    end_time = round(time.perf_counter() - start_time, 2)
-    end_time_str = f"{end_time} seconds"
 
     df = pd.read_json(logbook_data)
     logbook = df

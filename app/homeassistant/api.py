@@ -3,6 +3,7 @@ import pandas as pd
 import logging
 import os
 import json
+from datetime import date
 
 host = "homeassistant.local"
 port = 8123
@@ -54,7 +55,7 @@ class Api:
         return response.text
 
     @staticmethod
-    def get_logbook(start=None, end_time="2099-12-31T00%3A00%3A00%2B02%3A00"):
+    def get_logbook(start:date=None, end_time:date=None):
         """Returns the Logbook"""
         logbook_url = url + "logbook"
         
@@ -62,6 +63,7 @@ class Api:
             with requests.get(logbook_url, headers=headers) as r:
                 return r.text, r.status_code
         else:
-            with requests.get(f"{logbook_url}{timestamp}?end_time=2099-12-31T00%3A00%3A00%2B02%3A00",
+            start = start.strftime('%Y-%m-%d') + "T00%3A00%3A00%2B02%3A00"
+            with requests.get(f"{logbook_url}/{start}?end_time=2099-12-31T00%3A00%3A00%2B02%3A00",
                               headers=headers) as r:
                 return r.text, r.status_code
