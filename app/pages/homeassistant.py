@@ -14,6 +14,7 @@ dash.register_page(__name__,path="/homesassistant",order=1)
 
 layout = html.Div([
     html.H1('Home Assistant Logbook'),
+    html.Hr(),
     dcc.Loading(
             id="loading-2",
             type="circle",
@@ -35,7 +36,7 @@ layout = html.Div([
         daq.BooleanSwitch(
         id='delete_update_entries',
         label="Delete Update Entities",
-        labelPosition="left",
+        labelPosition="top",
         on=False),
     ]),
     html.Hr(),

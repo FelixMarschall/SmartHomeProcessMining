@@ -39,7 +39,6 @@ logging.info(f"Api.ping(): {Api.ping()}")
 
 print("Api.ping():" , Api.ping())
 
-BS = "https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
 PATH_ASSETS = "./app/assets/"
 PATH_IMAGES = PATH_ASSETS + "images/"
 
@@ -47,7 +46,7 @@ example_log = pm4py.read_xes(PATH_ASSETS + "running-example.xes")
 uploaded_log = None
 logbook = None
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG], use_pages=True)
 
 # suffix image timestamp
 timestr = None
@@ -220,7 +219,7 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
 def fetch_logbook(value, start_date, end_date, delete_update_entries):
     '''Fetches homeassistant logbook and prints in table'''
     global logbook
-    print("delete_update_entries",delete_update_entries)
+
     if not logbook is None and value is None:
         # use previous fetch
         quickstats = f"Logbook shape (row, cols): {logbook.shape}"
