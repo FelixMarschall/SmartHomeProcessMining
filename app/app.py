@@ -225,9 +225,10 @@ def fetch_logbook(value, start_date, end_date):
         quickstats = f"Logbook shape (row, cols): {logbook.shape}"
         return data_components.get_data_table(logbook), "locally stored fetch loaded", quickstats, None
 
-    logbook_data, status_code = None
+    logbook_data = None
+    status_code = None
+    
     start_time = time.perf_counter()
-
     if start_date is not None:
         start_date_object = date.fromisoformat(start_date)
         logbook_data, status_code = Api.get_logbook(start_date_object)
@@ -236,7 +237,7 @@ def fetch_logbook(value, start_date, end_date):
     
     end_time = round(time.perf_counter() - start_time, 2)
     end_time_str = f"{end_time} seconds"
-    
+
     # if end_date is not None:
     #     end_date_object = date.fromisoformat(end_date)
     #     end_date_string = end_date_object.strftime('%B %d, %Y')
