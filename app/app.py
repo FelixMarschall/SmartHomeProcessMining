@@ -224,7 +224,7 @@ def fetch_logbook(value, start_date, end_date, delete_update_entries):
     if not logbook is None and value is None:
         # use previous fetch
         quickstats = f"Logbook shape (row, cols): {logbook.shape}"
-        return data_components.get_data_table(logbook), "locally stored fetch loaded", quickstats, None
+        return data_components.get_logbook_table(logbook), "locally stored fetch loaded", quickstats, None
 
     logbook_data = None
     status_code = None
