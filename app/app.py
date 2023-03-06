@@ -245,16 +245,16 @@ def fetch_logbook(value, start_date, end_date):
     df = pd.read_json(logbook_data)
     
     # optimize storage
-    df_json_size = df.memory_usage(index=True).sum()/(1000*1000)
+    df_json_size = round(df.memory_usage(index=True).sum()/(1000*1000), 2)
     df[df.select_dtypes(['object']).columns] = df.select_dtypes(['object']).apply(lambda x: x.astype('category'))
-    df_size = df.memory_usage(index=True).sum()/(1000*1000)
+    df_size = round(df.memory_usage(index=True).sum()/(1000*1000), 2)
     
     logbook = df
 
     quickstats = f"Logbook shape (row, cols): {df.shape}; RAW Json Size in MB: {df_json_size}, panda framework size: {df_size}"
 
     logging.info(f"Fetched logbook in {end_time_str} with size (row, col) of {df.shape}")
-    return data_components.get_data_table(df), end_time_str, quickstats, None
+    return data_components.get_logbook_table(df), end_time_str, quickstats, None
 
 if __name__ == "__main__":
     logging.info("Starting dash server...")

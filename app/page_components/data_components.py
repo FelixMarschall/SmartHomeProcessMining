@@ -13,6 +13,19 @@ def get_data_table(log: pd.DataFrame) -> dash_table.DataTable:
       #'overflowY': 'auto' # activates scroll within table
       })
 
+def get_logbook_table(log: pd.DataFrame) -> dash_table.DataTable:
+   return dash_table.DataTable(log.to_dict('records'),
+        columns= [{"name": i, "id": i} for i in log.columns],
+        filter_action='native',
+        page_action='none',
+        export_format='xlsx',
+        export_headers='display',
+        virtualization=True,
+        style_table={
+      'height': '1080px',
+      #'overflowY': 'auto' # activates scroll within table
+      })
+
 def get_upload_button_style() -> dict:
    return {
             'width': '100%',
