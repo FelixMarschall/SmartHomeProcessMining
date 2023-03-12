@@ -1,14 +1,25 @@
 import dash
-from dash import dcc,html, Input, Output, callback
+import pm4py
+import time
+import logging
+import glob
+import os
+
+from dash import dcc,html, Input, Output, callback, State
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
 
 import pandas as pd
+ 
+from event_data import EventData
 
 import page_components.components as components
 import page_components.transformation_components as transformation_components
 
 dash.register_page(__name__,path="/transformation", order=4)
+
+PATH_ASSETS = "./app/assets/"
+PATH_IMAGES = PATH_ASSETS + "images/"
 
 layout = html.Div([
     html.H1('Transformation'),
@@ -102,3 +113,105 @@ def update_parameters_visibility(algo):
         return True, True, False
     else:
         raise PreventUpdate("Visibility did not change.")
+
+### Transformation "start mining" Button
+@callback(
+    Output('petrinet','src'),
+    Output('bpmn','src'),
+    Output('processtree','src'),
+    Output('mining-duration', 'children'),
+    Output('loading-1', 'children'),
+    #Output('graphs', 'children'),
+    Input('mine-button', 'n_clicks'),
+    State('algo-dropdown', 'value'),
+    # inductive algo
+    State('noise_threshold', 'value'),
+    # heuristc algo
+    State('dependency_threshold', 'value'), #float
+    State('and_threshold', 'value'), #float
+    State('loop_two_threshold', 'value'), #int
+    State('min_act_count', 'value'), #int
+    State('min_dfg_occurrences', 'value'), #int
+    prevent_initial_call=True
+)
+def update_transformation(value, algo, noise_threshold, dependency_threshold, and_threshold, loop_two_threshold, min_act_count, min_dfg_occurrences):
+    """Calles when transformation button is clicked."""
+    logging.debug(f"Callback 'start mining' button with value: {value} and algo: {algo}")
+
+    if EventData.uploaded_log is None:
+        EventData.uploaded_log = EventData.example_log
+
+    start_time = time.perf_counter()
+
+    if algo == "alpha":
+        process_model, start, end = pm4py.discover_petri_net_alpha(EventData.uploaded_log)
+    elif algo == "inductive":
+        if noise_threshold is None or noise_threshold > 1 or noise_threshold < 0:
+            noise_threshold = 0.0
+            logging.debug("Noise threshold is not set or not in range [0,1], using default value 0.0")
+
+        process_model, start, end = pm4py.discover_petri_net_inductive(EventData.uploaded_log, noise_threshold)
+    elif algo == "heuristic":
+        # check values and set to pm4py default values if not in range [0,1]
+        if dependency_threshold is None or dependency_threshold > 1 or dependency_threshold < 0:
+            dependency_threshold = 0.5
+        if and_threshold is None or and_threshold > 1 or and_threshold < 0:
+            and_threshold = 0.65
+        if loop_two_threshold is None or loop_two_threshold > 1 or loop_two_threshold < 0:
+            loop_two_threshold = 0.5
+        if min_act_count is None or min_act_count <= 0:
+            min_act_count = 1
+        if min_dfg_occurrences is None or min_dfg_occurrences <= 0:
+            min_dfg_occurrences = 1
+
+        process_model, start, end = pm4py.discover_petri_net_heuristics(EventData.uploaded_log, dependency_threshold, and_threshold, loop_two_threshold, min_act_count, min_dfg_occurrences)
+    else:
+        logging.error("Algorithm is not chosen")
+        raise PreventUpdate("Algorithm is not chosen")
+
+    mining_duration = time.perf_counter() - start_time
+    mining_duration = "mining duration: "+ str(round(mining_duration,2)) + "s"
+    logging.info(f"[{algo}] {mining_duration}")
+
+    try:
+        # petri net conversion
+        pt = pm4py.convert_to_process_tree(process_model, start, end)
+        bpmn = pm4py.convert_to_bpmn(process_model, start, end)
+    except Exception as e:
+        logging.error(type(e).__name__ + " while converting process model: " + str(e))
+        raise PreventUpdate()
+
+    global timestr
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+
+    pn_file_name = f"pn_{timestr}.png"
+    bpmn_file_name = f"bpmn_{timestr}.svg"
+    pt_file_name = f"pt_{timestr}.svg"
+
+    pn_file_path = PATH_ASSETS + pn_file_name
+    bpmn_file_path = PATH_ASSETS + bpmn_file_name
+    pt_file_path = PATH_ASSETS + pt_file_name
+
+    
+    # delete all images in assets
+    files = glob.glob(PATH_ASSETS +'*')
+    for i in files:
+        if ".png" in i or ".svg" in i:
+            os.remove(i)
+
+    try:
+        # safe image to disk
+        pm4py.save_vis_petri_net(process_model, start, end, pn_file_path)
+        pm4py.save_vis_bpmn(bpmn, bpmn_file_path)
+        pm4py.save_vis_process_tree(pt, pt_file_path)
+    except Exception as e:
+        logging.error(type(e).__name__ + " while saving process model: " + str(e))
+        raise PreventUpdate("Error while saving process model")
+
+    # # draw text on pn image
+    # img = Image.open(pn_file_path)
+    # I1 = ImageDraw.Draw(img)
+    # I1.text((0, 0), f"[{algo}]", fill=(255, 0, 0))
+    # img.save(pn_file_path)
+
+    return  dash.get_asset_url(pn_file_name),dash.get_asset_url(bpmn_file_name),dash.get_asset_url(pt_file_name),mining_duration, None
