@@ -82,13 +82,13 @@ layout = html.Div([
              children=[
                 html.Hr(),
                 html.H2('Petri Net'),
-                html.Img(id= "petrinet", src=dash.get_asset_url("pn.png"), alt="Petri Net Image", style={'width':'100%'}),
+                html.Img(id= "petrinet", src=dash.get_asset_url("pn.svg"), alt="Petri Net Image", style={'width':'100%'}),
                 html.Hr(),
                 html.H2('BPMN Graph'),
                 html.Img(id= "bpmn", src=dash.get_asset_url("bpmn.svg"), alt="BPMN Image", style={'width':'100%'}),
                 html.Hr(),
                 html.H2('Process Tree'),
-                html.Img(id= "processtree", src=dash.get_asset_url("pt.png"), alt="Process Tree", style={'width':'100%'}),
+                html.Img(id= "processtree", src=dash.get_asset_url("pt.svg"), alt="Process Tree", style={'width':'100%'}),
                 html.Hr(),
     ]
     ),
@@ -184,7 +184,7 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     global timestr
     timestr = time.strftime("%Y%m%d-%H%M%S")
 
-    pn_file_name = f"pn_{timestr}.png"
+    pn_file_name = f"pn_{timestr}.svg"
     bpmn_file_name = f"bpmn_{timestr}.svg"
     pt_file_name = f"pt_{timestr}.svg"
 

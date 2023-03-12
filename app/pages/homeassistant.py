@@ -138,7 +138,7 @@ def fetch_logbook(value, start_date, end_date, delete_update_entries):
 
     EventData.logbook = df
 
-    quickstats = f"Logbook shape (row, cols): {df.shape}; Panda Framework size: {df_size}"
+    quickstats = f"Logbook shape (row, cols): {df.shape}; Panda Framework size: {df_size} MB"
 
     logging.info(f"Fetched logbook in {end_time_str} with size (row, col) of {df.shape}")
     return data_components.get_logbook_table(df), end_time_str, quickstats, True, False, False, None
