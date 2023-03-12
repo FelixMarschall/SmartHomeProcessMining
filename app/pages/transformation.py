@@ -5,7 +5,7 @@ import logging
 import glob
 import os
 
-from dash import dcc,html, Input, Output, callback, State
+from dash import dcc,html, Input, Output, callback, State, no_update
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
 
@@ -73,9 +73,17 @@ layout = html.Div([
                     style=components.get_button_style()),
     html.Div(id='mining-duration'),
     dbc.Alert(
-            "Did not work with this algorithm and parameters!",
-            id="mining-error",
+            "Success!",
+            id="alert-mining-succ",
             is_open=False,
+            duration=6000,
+            color="success"
+            ),
+    dbc.Alert(
+            "Mining failed!",
+            id="alert-mining-error",
+            is_open=False,
+            duration=16000,
             color="danger"
             ),
     html.Div(id='graphs',
@@ -120,6 +128,8 @@ def update_parameters_visibility(algo):
     Output('bpmn','src'),
     Output('processtree','src'),
     Output('mining-duration', 'children'),
+    Output('alert-mining-succ', 'is_open'),
+    Output('alert-mining-error', 'is_open'),
     Output('loading-1', 'children'),
     #Output('graphs', 'children'),
     Input('mine-button', 'n_clicks'),
@@ -142,32 +152,35 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
         EventData.uploaded_log = EventData.example_log
 
     start_time = time.perf_counter()
+    try:
+        if algo == "alpha":
+            process_model, start, end = pm4py.discover_petri_net_alpha(EventData.uploaded_log)
+        elif algo == "inductive":
+            if noise_threshold is None or noise_threshold > 1 or noise_threshold < 0:
+                noise_threshold = 0.0
+                logging.debug("Noise threshold is not set or not in range [0,1], using default value 0.0")
 
-    if algo == "alpha":
-        process_model, start, end = pm4py.discover_petri_net_alpha(EventData.uploaded_log)
-    elif algo == "inductive":
-        if noise_threshold is None or noise_threshold > 1 or noise_threshold < 0:
-            noise_threshold = 0.0
-            logging.debug("Noise threshold is not set or not in range [0,1], using default value 0.0")
+            process_model, start, end = pm4py.discover_petri_net_inductive(EventData.uploaded_log, noise_threshold)
+        elif algo == "heuristic":
+            # check values and set to pm4py default values if not in range [0,1]
+            if dependency_threshold is None or dependency_threshold > 1 or dependency_threshold < 0:
+                dependency_threshold = 0.5
+            if and_threshold is None or and_threshold > 1 or and_threshold < 0:
+                and_threshold = 0.65
+            if loop_two_threshold is None or loop_two_threshold > 1 or loop_two_threshold < 0:
+                loop_two_threshold = 0.5
+            if min_act_count is None or min_act_count <= 0:
+                min_act_count = 1
+            if min_dfg_occurrences is None or min_dfg_occurrences <= 0:
+                min_dfg_occurrences = 1
 
-        process_model, start, end = pm4py.discover_petri_net_inductive(EventData.uploaded_log, noise_threshold)
-    elif algo == "heuristic":
-        # check values and set to pm4py default values if not in range [0,1]
-        if dependency_threshold is None or dependency_threshold > 1 or dependency_threshold < 0:
-            dependency_threshold = 0.5
-        if and_threshold is None or and_threshold > 1 or and_threshold < 0:
-            and_threshold = 0.65
-        if loop_two_threshold is None or loop_two_threshold > 1 or loop_two_threshold < 0:
-            loop_two_threshold = 0.5
-        if min_act_count is None or min_act_count <= 0:
-            min_act_count = 1
-        if min_dfg_occurrences is None or min_dfg_occurrences <= 0:
-            min_dfg_occurrences = 1
-
-        process_model, start, end = pm4py.discover_petri_net_heuristics(EventData.uploaded_log, dependency_threshold, and_threshold, loop_two_threshold, min_act_count, min_dfg_occurrences)
-    else:
-        logging.error("Algorithm is not chosen")
-        raise PreventUpdate("Algorithm is not chosen")
+            process_model, start, end = pm4py.discover_petri_net_heuristics(EventData.uploaded_log, dependency_threshold, and_threshold, loop_two_threshold, min_act_count, min_dfg_occurrences)
+        else:
+            logging.error("Algorithm is not chosen")
+            return no_update, no_update, no_update, no_update, False, True, no_update
+    except Exception as e:
+        logging.error(f"Mining went wrong: {e}")
+        return no_update, no_update, no_update, no_update, False, True, no_update
 
     mining_duration = time.perf_counter() - start_time
     mining_duration = "mining duration: "+ str(round(mining_duration,2)) + "s"
@@ -179,7 +192,7 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
         bpmn = pm4py.convert_to_bpmn(process_model, start, end)
     except Exception as e:
         logging.error(type(e).__name__ + " while converting process model: " + str(e))
-        raise PreventUpdate()
+        return no_update, no_update, no_update, no_update, True, no_update
 
     global timestr
     timestr = time.strftime("%Y%m%d-%H%M%S")
@@ -206,7 +219,7 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
         pm4py.save_vis_process_tree(pt, pt_file_path)
     except Exception as e:
         logging.error(type(e).__name__ + " while saving process model: " + str(e))
-        raise PreventUpdate("Error while saving process model")
+        return no_update, no_update, no_update, no_update, True, no_update
 
     # # draw text on pn image
     # img = Image.open(pn_file_path)
@@ -214,4 +227,4 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     # I1.text((0, 0), f"[{algo}]", fill=(255, 0, 0))
     # img.save(pn_file_path)
 
-    return  dash.get_asset_url(pn_file_name),dash.get_asset_url(bpmn_file_name),dash.get_asset_url(pt_file_name),mining_duration, None
+    return  dash.get_asset_url(pn_file_name),dash.get_asset_url(bpmn_file_name),dash.get_asset_url(pt_file_name),mining_duration, True, False, None
