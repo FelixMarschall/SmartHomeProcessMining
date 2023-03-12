@@ -4,6 +4,6 @@ dash_daq==0.5.0
 pandas==1.5.3
 Pillow==9.4.0
 plotly==5.13.1
-pm4py==2.5.2
+pm4py==2.5.3
 requests==2.28.2
 setuptools==65.5.1
