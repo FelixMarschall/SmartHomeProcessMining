@@ -24,7 +24,7 @@ import page_components.transformation_components as transformation_components
 
 # set up logger
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 logging.debug(os.environ)
 logging.info(f"options.json exists {os.path.isfile('/data/options.json')}")

@@ -9,6 +9,7 @@ def get_layout() -> dbc.Container:
         html.Div(children=[html.Div(
                 sidebar,
             ),
+        dcc.Store(id='image_file_name', storage_type='session'),
         dash.page_container,
         ]))
 

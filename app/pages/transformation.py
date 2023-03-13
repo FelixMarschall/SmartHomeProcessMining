@@ -21,6 +21,7 @@ dash.register_page(__name__,path="/transformation", order=4)
 PATH_ASSETS = "./app/assets/"
 PATH_IMAGES = PATH_ASSETS + "images/"
 
+
 layout = html.Div([
     html.H1('Transformation'),
     html.Hr(),
@@ -90,13 +91,13 @@ layout = html.Div([
              children=[
                 html.Hr(),
                 html.H2('Petri Net'),
-                html.Img(id= "petrinet", src=dash.get_asset_url("pn.svg"), alt="Petri Net Image", style={'width':'100%'}),
+                html.Img(id= "petrinet", alt="Petri Net Image", style={'width':'100%'}),
                 html.Hr(),
                 html.H2('BPMN Graph'),
-                html.Img(id= "bpmn", src=dash.get_asset_url("bpmn.svg"), alt="BPMN Image", style={'width':'100%'}),
+                html.Img(id= "bpmn", alt="BPMN Image", style={'width':'100%'}),
                 html.Hr(),
                 html.H2('Process Tree'),
-                html.Img(id= "processtree", src=dash.get_asset_url("pt.svg"), alt="Process Tree", style={'width':'100%'}),
+                html.Img(id= "processtree", alt="Process Tree", style={'width':'100%'}),
                 html.Hr(),
     ]
     ),
@@ -124,14 +125,11 @@ def update_parameters_visibility(algo):
 
 ### Transformation "start mining" Button
 @callback(
-    Output('petrinet','src'),
-    Output('bpmn','src'),
-    Output('processtree','src'),
     Output('mining-duration', 'children'),
     Output('alert-mining-succ', 'is_open'),
     Output('alert-mining-error', 'is_open'),
+    Output('image_file_name', 'data'),
     Output('loading-1', 'children'),
-    #Output('graphs', 'children'),
     Input('mine-button', 'n_clicks'),
     State('algo-dropdown', 'value'),
     # inductive algo
@@ -147,6 +145,9 @@ def update_parameters_visibility(algo):
 def update_transformation(value, algo, noise_threshold, dependency_threshold, and_threshold, loop_two_threshold, min_act_count, min_dfg_occurrences):
     """Calles when transformation button is clicked."""
     logging.debug(f"Callback 'start mining' button with value: {value} and algo: {algo}")
+
+    if value is None:
+        raise PreventUpdate("Nothing clicked")
 
     if EventData.uploaded_log is None:
         EventData.uploaded_log = EventData.example_log
@@ -177,10 +178,10 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
             process_model, start, end = pm4py.discover_petri_net_heuristics(EventData.uploaded_log, dependency_threshold, and_threshold, loop_two_threshold, min_act_count, min_dfg_occurrences)
         else:
             logging.error("Algorithm is not chosen")
-            return no_update, no_update, no_update, no_update, False, True, no_update
+            return no_update, False, True, no_update, no_update
     except Exception as e:
         logging.error(f"Mining went wrong: {e}")
-        return no_update, no_update, no_update, no_update, False, True, no_update
+        return no_update, False, True, no_update, no_update
 
     mining_duration = time.perf_counter() - start_time
     mining_duration = "mining duration: "+ str(round(mining_duration,2)) + "s"
@@ -192,9 +193,8 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
         bpmn = pm4py.convert_to_bpmn(process_model, start, end)
     except Exception as e:
         logging.error(type(e).__name__ + " while converting process model: " + str(e))
-        return no_update, no_update, no_update, no_update, True, no_update
+        return no_update, False, True, no_update, no_update
 
-    global timestr
     timestr = time.strftime("%Y%m%d-%H%M%S")
 
     pn_file_name = f"pn_{timestr}.svg"
@@ -205,7 +205,6 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     bpmn_file_path = PATH_ASSETS + bpmn_file_name
     pt_file_path = PATH_ASSETS + pt_file_name
 
-    
     # delete all images in assets
     files = glob.glob(PATH_ASSETS +'*')
     for i in files:
@@ -219,12 +218,30 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
         pm4py.save_vis_process_tree(pt, pt_file_path)
     except Exception as e:
         logging.error(type(e).__name__ + " while saving process model: " + str(e))
-        return no_update, no_update, no_update, no_update, True, no_update
 
-    # # draw text on pn image
-    # img = Image.open(pn_file_path)
-    # I1 = ImageDraw.Draw(img)
-    # I1.text((0, 0), f"[{algo}]", fill=(255, 0, 0))
-    # img.save(pn_file_path)
+        return no_update, False, True, no_update, no_update
 
-    return  dash.get_asset_url(pn_file_name),dash.get_asset_url(bpmn_file_name),dash.get_asset_url(pt_file_name),mining_duration, True, False, None
+    image_file_name = {
+        "algorithm": algo,
+        "petri": pn_file_name,
+        "bpmn": bpmn_file_name,
+        "tree": pt_file_name
+    }
+    
+    return mining_duration, True, False, image_file_name, None
+
+@callback(
+    Output('petrinet','src'), 
+    Output('bpmn','src'),
+    Output('processtree','src'),
+    Input('image_file_name' ,'modified_timestamp'),
+    State('image_file_name', 'data'),
+)
+def update_graphs(ts, image_file_name):
+    '''Changes the graph image when image data changed'''
+    logging.info("process models path",image_file_name)
+
+    if image_file_name is None:
+        raise PreventUpdate()
+    
+    return dash.get_asset_url(image_file_name["petri"]),dash.get_asset_url(image_file_name["bpmn"]),dash.get_asset_url(image_file_name["tree"])
