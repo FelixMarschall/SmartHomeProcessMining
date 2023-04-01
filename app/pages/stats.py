@@ -20,6 +20,7 @@ fig2 = px.scatter(df, x="sepal_width", y="sepal_length")
 layout = html.Div(id= "stats", children = [
     html.H1('Stats'),
     html.Hr(),
+    html.H2('Activities'),
     dcc.Graph(figure=count_activities),
     html.H2('Day View'),
     dcc.Graph(figure=fig),
