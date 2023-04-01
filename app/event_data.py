@@ -11,4 +11,6 @@ class EventData:
     #     with pm4py.read_xes(PATH_ASSETS + "temp/uploaded.xes") as file:
     #         uploaded_log = file
 
+    
+
     logbook = None

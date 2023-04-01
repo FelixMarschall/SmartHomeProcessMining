@@ -1,26 +1,15 @@
 import os
 import logging
-from datetime import date
 
 # imports for web app
 import dash
-from dash.dependencies import Input, Output, State
-from dash import dcc, html, dash_table
-from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
-import pandas as pd
 
 # own modules
 from homeassistant import Api
 
-# process mining imports
-import pm4py
-
 # local imports
-import page_components.data_components as data_components
-import page_components.app_components as app_components
-import page_components.transformation_components as transformation_components
-    
+import page_components.app_components as app_components    
 
 # set up logger
 logger = logging.getLogger(__name__)
@@ -48,6 +37,8 @@ class App:
         return App.__conf.get(name)
 
 if __name__ == "__main__":
-    logging.info("Starting dash server...")    
+    logging.info("Starting dash server...")
+
+    # 
 
     App.app.run_server(debug=True, host="0.0.0.0")

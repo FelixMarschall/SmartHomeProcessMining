@@ -1,5 +1,5 @@
 import dash
-from dash import dcc, html
+from dash import html
 
 dash.register_page(__name__,path="/",order=0)
 

@@ -2,7 +2,7 @@ import dash
 import logging
 import io
 import pm4py
-from dash import Dash, dcc, html, Input, Output, callback, State
+from dash import dcc, html, Input, Output, callback, State
 from dash.exceptions import PreventUpdate
 import pandas as pd
 import base64

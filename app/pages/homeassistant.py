@@ -4,7 +4,7 @@ import time
 import logging
 
 from datetime import date
-from dash import Dash, dcc, html, Input, Output, callback, State
+from dash import dcc, html, Input, Output, callback, State
 from dash.dependencies import Input, Output
 import dash_daq as daq
 import dash_bootstrap_components as dbc
