@@ -13,7 +13,7 @@ url = f"http://{host}:{port}/api/"
 
 timestamp = "2022-02-15T00:00:00+02:00"
 
-token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiIzMzc5NDBmZmZlNWU0MWJiYmY4MDZmYzYzZmM0MjNhNSIsImlhdCI6MTY3NzcwNjg4MSwiZXhwIjoxOTkzMDY2ODgxfQ.IrgtgxwY1dKjTcNV59ZhX-URvptsQ_MmE6XsPN-23WA"
+token = "xxxx"
 
 # check if key store in options (Homeassistant)
 if os.path.isfile("/data/options.json"):
@@ -39,7 +39,6 @@ headers = {
 
 
 class Api:
-
     @staticmethod
     def ping():
         """Pings the Homeassistant API"""

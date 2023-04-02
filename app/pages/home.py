@@ -21,7 +21,7 @@ layout = html.Div([
     html.Hr(),
     html.H2('Documentation'),
     html.Div('Shared source code on GitHub: '),
-    html.A('The Python Application', href='https://github.com/FelixMarschall/SmartHomeProcessMining'),
+    html.A('Python Application', href='https://github.com/FelixMarschall/SmartHomeProcessMining'),
     html.Br(),
-    html.A('The Addon Wrapper', href='https://github.com/FelixMarschall/HA_ProcessMining_Addon')
+    html.A('Home Assistant Addon', href='https://github.com/FelixMarschall/HA_ProcessMining_Addon')
 ])
