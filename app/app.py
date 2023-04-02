@@ -11,15 +11,6 @@ from homeassistant import Api
 # local imports
 import page_components.app_components as app_components    
 
-# set up logger
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-
-logging.debug(os.environ)
-logging.info(f"options.json exists {os.path.isfile('/data/options.json')}")
-logging.info(f"Api.ping(): {Api.ping()}")
-
-logging.info("Api.ping():" , Api.ping())
 
 class App:
     # do not change
@@ -37,8 +28,23 @@ class App:
         return App.__conf.get(name)
 
 if __name__ == "__main__":
+    logging.info("Starting App...")
+
+    # print home assistant environment variables
+    logging.debug(os.environ)
+    logging.debug(f"options.json exists {os.path.isfile('/data/options.json')}")
+
+    # test if home assistant is reachable
+    logging.info("Test connection to Home Assistant...")
+    logging.info(f"Api.ping(): {Api.ping()}")
+
+    # remove old uploaded log
+    if os.path.isfile('app/assets/temp/uploaded.csv'):
+        os.remove('app/assets/temp/uploaded.csv')
+    if os.path.isfile('app/assets/temp/uploaded.xes'):
+        os.remove('app/assets/temp/uploaded.xes')
+    if os.path.isfile('app/assets/temp/uploaded.feather'):
+        os.remove('app/assets/temp/uploaded.feather')
+
     logging.info("Starting dash server...")
-
-    # 
-
-    App.app.run_server(debug=True, host="0.0.0.0")
+    App.app.run_server(debug=False, host="0.0.0.0")

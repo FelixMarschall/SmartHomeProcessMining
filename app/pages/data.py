@@ -10,6 +10,8 @@ import base64
 import page_components.data_components as data_components
 from event_data import EventData
 
+import pyarrow.feather as feather
+
 dash.register_page(__name__,path="/data", order=2)
 
 PATH_ASSETS = "./app/assets/"
@@ -57,6 +59,7 @@ def update_output(contents, list_of_names, list_of_dates):
 
     logging.info(f"File uploaded with name: '{list_of_names}' and date: {list_of_dates}")
     
+    # TODO maybe use more efficient way to store log (feather, parquet, etc.)
     try:
         if list_of_names.endswith('.csv'):
             UPLOAD_PATH = PATH_ASSETS + "/temp/uploaded.csv"
@@ -64,6 +67,9 @@ def update_output(contents, list_of_names, list_of_dates):
             f.write(decoded.decode('utf-8'))
             f.close()
             EventData.uploaded_log = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
+
+            feather.write_feather(EventData.uploaded_log, 'app/assets/temp/uploaded.feather')
+
             logging.debug("upload file is csv log")
         elif list_of_names.endswith('.xes'):
             UPLOAD_PATH = PATH_ASSETS + "/temp/uploaded.xes"
@@ -71,6 +77,9 @@ def update_output(contents, list_of_names, list_of_dates):
             f.write(decoded.decode('utf-8'))
             f.close()
             EventData.uploaded_log = pm4py.read_xes(UPLOAD_PATH)
+
+            feather.write_feather(EventData.uploaded_log, 'app/assets/temp/uploaded.feather')
+            
             logging.debug("upload file is xes log")
     except Exception as e:
         logging.error(type(e).__name__ + " while reading file: " + str(e))
