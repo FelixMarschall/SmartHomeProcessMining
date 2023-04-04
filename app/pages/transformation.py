@@ -90,6 +90,9 @@ layout = html.Div([
     html.Div(id='graphs',
              children=[
                 html.Hr(),
+                html.H2('Direct follows graph'),
+                html.Img(id= "dfg", alt="DfG Image", style={'width':'100%'}),
+                html.Hr(),
                 html.H2('Petri Net'),
                 html.Img(id= "petrinet", alt="Petri Net Image", style={'width':'100%'}),
                 html.Hr(),
@@ -154,6 +157,7 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
 
     start_time = time.perf_counter()
     try:
+        dfg, sa, ea = pm4py.discover_dfg(EventData.uploaded_log)
         if algo == "alpha":
             process_model, start, end = pm4py.discover_petri_net_alpha(EventData.uploaded_log)
         elif algo == "inductive":
@@ -197,10 +201,12 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
 
     timestr = time.strftime("%Y%m%d-%H%M%S")
 
+    dfg_file_name = f"dfg_{timestr}.svg"
     pn_file_name = f"pn_{timestr}.svg"
     bpmn_file_name = f"bpmn_{timestr}.svg"
     pt_file_name = f"pt_{timestr}.svg"
 
+    dfg_file_path = PATH_ASSETS + dfg_file_name
     pn_file_path = PATH_ASSETS + pn_file_name
     bpmn_file_path = PATH_ASSETS + bpmn_file_name
     pt_file_path = PATH_ASSETS + pt_file_name
@@ -213,6 +219,7 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
 
     try:
         # safe image to disk
+        pm4py.save_vis_dfg(dfg, sa, ea, dfg_file_path)
         pm4py.save_vis_petri_net(process_model, start, end, pn_file_path)
         pm4py.save_vis_bpmn(bpmn, bpmn_file_path)
         pm4py.save_vis_process_tree(pt, pt_file_path)
@@ -223,6 +230,7 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
 
     image_file_name = {
         "algorithm": algo,
+        "dfg": dfg_file_name,
         "petri": pn_file_name,
         "bpmn": bpmn_file_name,
         "tree": pt_file_name
@@ -231,6 +239,7 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     return mining_duration, True, False, image_file_name, None
 
 @callback(
+    Output('dfg', 'src'),
     Output('petrinet','src'), 
     Output('bpmn','src'),
     Output('processtree','src'),
@@ -244,4 +253,4 @@ def update_graphs(ts, image_file_name):
     if image_file_name is None:
         raise PreventUpdate()
     
-    return dash.get_asset_url(image_file_name["petri"]),dash.get_asset_url(image_file_name["bpmn"]),dash.get_asset_url(image_file_name["tree"])
+    return dash.get_asset_url(image_file_name["dfg"]),dash.get_asset_url(image_file_name["petri"]),dash.get_asset_url(image_file_name["bpmn"]),dash.get_asset_url(image_file_name["tree"])
