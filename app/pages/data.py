@@ -59,7 +59,6 @@ def update_output(contents, list_of_names, list_of_dates):
 
     logging.info(f"File uploaded with name: '{list_of_names}' and date: {list_of_dates}")
     
-    # TODO maybe use more efficient way to store log (feather, parquet, etc.)
     try:
         if list_of_names.endswith('.csv'):
             UPLOAD_PATH = PATH_ASSETS + "/temp/uploaded.csv"

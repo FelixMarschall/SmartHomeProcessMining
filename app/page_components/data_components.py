@@ -8,6 +8,7 @@ def get_data_table(log: pd.DataFrame) -> dash_table.DataTable:
         page_action='none',
         export_format='xlsx',
         export_headers='display',
+        virtualization=True,
         style_table={
       'height': '900px',
       #'overflowY': 'auto' # activates scroll within table
