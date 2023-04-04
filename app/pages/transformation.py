@@ -29,7 +29,7 @@ layout = html.Div([
     html.Div(children='Choose your favorite algorithmn and set parameters!'),
     dcc.Dropdown(
     ['alpha', 'heuristic', 'inductive'],
-    value='alpha',
+    value='inductive',
     clearable=False,
     id='algo-dropdown',
     style={
@@ -113,7 +113,7 @@ layout = html.Div([
     Output('heuristic-parameters', 'hidden'),
     Output('inductive-parameters', 'hidden'),
     Input('algo-dropdown', 'value'),
-    prevent_initial_call=True)
+    prevent_initial_call=False)
 def update_parameters_visibility(algo):
     """Calles when dropdown for transformation algorithm is changed."""
 
