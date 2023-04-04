@@ -90,7 +90,7 @@ layout = html.Div([
     html.Div(id='graphs',
              children=[
                 html.Hr(),
-                html.H2('Direct follows graph'),
+                html.H2('Directly-follows graph'),
                 html.Img(id= "dfg", alt="DfG Image", style={'width':'100%'}),
                 html.Hr(),
                 html.H2('Petri Net'),
@@ -155,6 +155,10 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     if EventData.uploaded_log is None:
         EventData.uploaded_log = EventData.example_log
 
+    print(EventData.uploaded_log.head())
+
+    EventData.uploaded_log["time:timestamp"] = pd.to_datetime(EventData.uploaded_log['time:timestamp'])
+
     start_time = time.perf_counter()
     try:
         dfg, sa, ea = pm4py.discover_dfg(EventData.uploaded_log)
@@ -192,10 +196,10 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     logging.info(f"[{algo}] {mining_duration}")
 
     try:
-        # petri net conversion
         pt = pm4py.convert_to_process_tree(process_model, start, end)
         bpmn = pm4py.convert_to_bpmn(process_model, start, end)
     except Exception as e:
+
         logging.error(type(e).__name__ + " while converting process model: " + str(e))
         return no_update, False, True, no_update, no_update
 

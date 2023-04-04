@@ -46,7 +46,6 @@ layout = html.Div(id= "stats", children = [
 )
 def update_stats(dummy):
     if EventData.uploaded_log is not None:
-        print("USE asad uploaded log")
         log = EventData.uploaded_log
     else:
         log = EventData.example_log

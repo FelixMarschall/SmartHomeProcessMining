@@ -66,7 +66,6 @@ def update_output(contents, list_of_names, list_of_dates):
             f.write(decoded.decode('utf-8'))
             f.close()
             EventData.uploaded_log = pd.read_csv(io.StringIO(decoded.decode('utf-8')))
-
             feather.write_feather(EventData.uploaded_log, 'app/assets/temp/uploaded.feather')
 
             logging.debug("upload file is csv log")
@@ -83,6 +82,16 @@ def update_output(contents, list_of_names, list_of_dates):
     except Exception as e:
         logging.error(type(e).__name__ + " while reading file: " + str(e))
         raise PreventUpdate()
+
+    #check if needed columns are existing
+    if not "concept:name" in EventData.uploaded_log.columns:
+        logging.error("concept:name column not found")
+    elif not "time:timestamp" in EventData.uploaded_log.columns:
+        logging.error("time:timestamp column not found")
+    elif not "case:concept:name" in EventData.uploaded_log.columns:
+        logging.error("case:concept:name column not found")
+
+    # EventData.uploaded_log = pd.to_datetime(EventData.uploaded_log["time:timestamp"])
 
     # update stats page
     return data_components.get_data_table(EventData.uploaded_log)
