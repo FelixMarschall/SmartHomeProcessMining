@@ -47,4 +47,4 @@ if __name__ == "__main__":
         os.remove('app/assets/temp/uploaded.feather')
 
     logging.info("Starting dash server...")
-    App.app.run_server(debug=True, host="0.0.0.0")
+    App.app.run_server(debug=False, host="0.0.0.0")

@@ -14,6 +14,7 @@ layout = html.Div([
              'You can also access your Home Assistant Logbook when you run it as addon or your homeassistant instance is in the same network and this application got access with a personal token.',
              html.Br(),
             html.A('Installation Guide (Home Assistant)', href='https://github.com/FelixMarschall/HA_ProcessMining_Addon/blob/main/process_management/DOCS.md'),
+            html.Br(),
             html.A('Installation Guide (Local Machine)', href='https://github.com/FelixMarschall/SmartHomeProcessMining#readme'),
 ]),
     html.Hr(),
