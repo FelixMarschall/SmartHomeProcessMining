@@ -19,7 +19,11 @@ layout = html.Div([
 ]),
     html.Hr(),
     html.H2('How to use this demo?'),
-    html.Div('You can import your own logs by clicking on the "Import Log" button. You can also use the example logs provided in the example files folder. You can also use the example logs provided in the example files folder.'),
+    html.Div('You can import your own logs by clicking on the "Import Log" button.\
+             A personal token is neccessary to access the home assistant data, copy the token into the addon configuration and restart the addon.\
+             You can export the log as .csv and prepare it for process discovery by adding the following columns: "case_id", "activity", "timestamp" and upload it.'),
+    html.Br(),
+    html.A("An example for the prepreparation",href="https://github.com/FelixMarschall/Logbook-ProcessDiscovery"),
     html.Hr(),
     html.H2('Documentation'),
     html.Div('Shared source code on GitHub: '),

@@ -91,6 +91,7 @@ layout = html.Div([
              children=[
                 html.Hr(),
                 html.H2('Directly-follows graph'),
+                html.P("Graph is not influenced by the transformation algorithm or the parameters above."),
                 html.Img(id= "dfg", alt="DfG Image", style={'width':'100%'}),
                 html.Hr(),
                 html.H2('Petri Net'),

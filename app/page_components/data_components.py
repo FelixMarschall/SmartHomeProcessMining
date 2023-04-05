@@ -6,7 +6,7 @@ def get_data_table(log: pd.DataFrame) -> dash_table.DataTable:
         columns= [{"name": i, "id": i} for i in log.columns],
         filter_action='native',
         page_action='none',
-        export_format='xlsx',
+        export_format='csv',
         export_headers='display',
         virtualization=True,
         style_table={

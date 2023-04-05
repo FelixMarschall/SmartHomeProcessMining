@@ -46,6 +46,7 @@ layout = html.Div(id= "stats", children = [
 )
 def update_stats(dummy):
     if EventData.uploaded_log is not None:
+        EventData.uploaded_log["time:timestamp"] = pd.to_datetime(EventData.uploaded_log['time:timestamp'])
         log = EventData.uploaded_log
     else:
         log = EventData.example_log
