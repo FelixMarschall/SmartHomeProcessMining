@@ -42,23 +42,24 @@ class Api:
     @staticmethod
     def ping():
         """Pings the Homeassistant API"""
-        response = None
         try:
             response = requests.get(url, headers=headers)
         except requests.exceptions.ConnectionError as e:
-            logging.error(f"API request failed: cannot connect to Homeassistant API")
+            logging.error(
+                f"API request failed: cannot connect to Homeassistant API")
             return None
 
         if response.status_code < 200 or response.status_code > 202:
-            logging.error(f"API request failed with token: {response.status_code}")
+            logging.error(
+                f"API request failed with token: {response.status_code}")
 
         return response.text
 
     @staticmethod
-    def get_logbook(start:date=None, end_time:date=None):
+    def get_logbook(start: date = None, end_time: date = None):
         """Returns the Logbook"""
         logbook_url = url + "logbook"
-        
+
         if start is None:
             with requests.get(logbook_url, headers=headers) as r:
                 return r.text, r.status_code

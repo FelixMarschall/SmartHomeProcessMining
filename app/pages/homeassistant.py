@@ -99,9 +99,7 @@ def fetch_logbook(value, start_date, end_date, delete_update_entries):
         quickstats = f"Logbook shape (row, cols): {logbook.shape}"
         return data_components.get_logbook_table(logbook), "locally stored fetch loaded", quickstats, False, False, False, None
 
-    logbook_data = None
-    status_code = None
-    
+        
     start_time = time.perf_counter()
     try:
         if start_date is not None:
@@ -112,7 +110,6 @@ def fetch_logbook(value, start_date, end_date, delete_update_entries):
     except Exception as e:
         logging.error(e)
         return None, None, None, False, False, True, None
-
 
     end_time = round(time.perf_counter() - start_time, 2)
     end_time_str = f"{end_time} seconds"

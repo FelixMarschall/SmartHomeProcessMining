@@ -9,7 +9,7 @@ import dash_bootstrap_components as dbc
 from homeassistant import Api
 
 # local imports
-import page_components.app_components as app_components    
+import page_components.app_components as app_components
 
 
 class App:
@@ -19,20 +19,22 @@ class App:
         "PATH_IMAGES": "./app/assets/images/"
     }
 
-    
-    app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], use_pages=True)
+    app = dash.Dash(__name__, external_stylesheets=[
+                    dbc.themes.BOOTSTRAP], use_pages=True)
     app.layout = app_components.get_layout()
 
     @staticmethod
     def config(name):
         return App.__conf.get(name)
 
+
 if __name__ == "__main__":
     logging.info("Starting App...")
 
     # print home assistant environment variables
     logging.debug(os.environ)
-    logging.debug(f"options.json exists {os.path.isfile('/data/options.json')}")
+    logging.debug(
+        f"options.json exists {os.path.isfile('/data/options.json')}")
 
     # test if home assistant is reachable
     logging.info("Test connection to Home Assistant...")
