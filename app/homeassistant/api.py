@@ -23,8 +23,8 @@ if os.path.isfile("/data/options.json"):
         if len(options_config['credential_secret']) >= 10:
             token = options_config['credential_secret']
             logging.info("Individual token from options.json setted.")
-elif os.path.isfile("app/config.yaml"):
-    with open('app/config.yaml', "r") as yaml_file:
+elif os.path.isfile("config.yaml"):
+    with open('config.yaml', "r") as yaml_file:
         config = yaml.safe_load(yaml_file)
         if len(config['homeassistant_token']) >= 10:
             token = config['homeassistant_token']
@@ -41,7 +41,6 @@ headers = {
     "Authorization": f'Bearer {token}',
     "content-type": "application/json",
 }
-
 
 class Api:
     @staticmethod

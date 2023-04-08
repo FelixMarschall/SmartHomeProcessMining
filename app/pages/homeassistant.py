@@ -118,12 +118,20 @@ def fetch_logbook(value, start_date, end_date, delete_update_entries):
     #     end_date_object = date.fromisoformat(end_date)
     #     end_date_string = end_date_object.strftime('%B %d, %Y')
 
-    df = pd.read_json(logbook_data)
+    if status_code != 200:
+        logging.error(f"Error fetching logbook, status code: {status_code}")
+        return None, None, None, False, False, True, None
 
-    if df.empty:
-        logging.error("Empty Logbook fetch, Fetch without start date lists only events from today.")
-        return None, None, None, False, True, False, None
 
+    try:
+        df = pd.read_json(logbook_data)
+
+        if df.empty:
+            logging.error("Empty Logbook fetch, Fetch without start date lists only events from today.")
+            return None, None, None, False, True, False, None
+    except Exception as e:
+        logging.error(e)
+        return None, None, None, False, False, True, None
     
     # optimize storage
     df_json_size = round(df.memory_usage(index=True).sum()/(1000*1000), 2)
