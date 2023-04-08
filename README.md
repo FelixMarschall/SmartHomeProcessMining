@@ -17,9 +17,9 @@ Uses Process Mining to extract Smart Home information from an Event Log.
 ## Access Home-Assistant Data remotely
 
 1. Create a new personal long-term token in home-assistant
-2. open the `SmartHomeProcessMining/app/homeassistant/`
-3. open `api.py`
-4. change `token` in row 16
+2. open the `SmartHomeProcessMining` folder
+3. open `config.yaml`
+4. change `token`
 
 Caution: updating this app can flush token!
 
