@@ -4,6 +4,7 @@ import pandas as pd
 import logging
 import os
 import json
+import yaml
 from datetime import date
 
 host = "homeassistant.local"
@@ -17,17 +18,21 @@ token = "xxxx"
 
 # check if key store in options (Homeassistant)
 if os.path.isfile("/data/options.json"):
-    with open('/data/options.json') as json_file:
+    with open('/data/options.json', "r") as json_file:
         options_config = json.load(json_file)
         if len(options_config['credential_secret']) >= 10:
             token = options_config['credential_secret']
-            print("Individual token setted.")
+            logging.info("Individual token from options.json setted.")
+elif os.path.isfile("app/config.yaml"):
+    with open('app/config.yaml', "r") as yaml_file:
+        config = yaml.safe_load(yaml_file)
+        if len(config['homeassistant_token']) >= 10:
+            token = config['homeassistant_token']
+            logging.info("Individual token from config.yaml setted.")
 
 # check if key stored in environment variables
-has_os_token = False
 if 'SUPERVISOR_TOKEN' in os.environ:
-    print("Found supervisor token!!!!")
-    has_os_token = True
+    logging.info("Found supervisor token!!!!")
     url = "http://supervisor/core/api/"
     token = os.environ['SUPERVISOR_TOKEN']
 
