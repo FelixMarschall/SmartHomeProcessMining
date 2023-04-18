@@ -25,12 +25,12 @@ layout = html.Div(id="stats", children=[
     html.H2('Day View'),
     html.P('Number of events per day'),
     dcc.Graph(id="day"),
-    html.Hr(),
-    html.H2('Week View'),
-    dcc.Graph(id="week"),
-    html.Hr(),
-    html.H2('Month View'),
-    dcc.Graph(id="month"),
+    # html.Hr(),
+    # html.H2('Week View'),
+    # dcc.Graph(id="week"),
+    # html.Hr(),
+    # html.H2('Month View'),
+    # dcc.Graph(id="month"),
     html.Div(id="dummy")
 ]
 )
@@ -39,8 +39,8 @@ layout = html.Div(id="stats", children=[
 @callback(
     Output("activities", "figure"),
     Output("day", "figure"),
-    Output("week", "figure"),
-    Output("month", "figure"),
+    #Output("week", "figure"),
+    #Output("month", "figure"),
     Output("loading-stats", "children"),
     Input("dummy", "children")
 )
@@ -63,4 +63,6 @@ def update_stats(dummy):
     fig = go.Figure(data=[go.Scatter(x=[1, 2, 3], y=[4, 1, 2])])
     fig2 = px.scatter(df, x="sepal_width", y="sepal_length")
 
-    return count_activities, px.bar(cluster_by_day), fig, fig2, None
+    #return count_activities, px.bar(cluster_by_day), fig, fig2, None
+
+    return count_activities, px.bar(cluster_by_day), None
