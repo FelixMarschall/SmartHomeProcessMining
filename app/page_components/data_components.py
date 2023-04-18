@@ -23,7 +23,7 @@ def get_logbook_table(log: pd.DataFrame) -> dash_table.DataTable:
                                         for i in log.columns],
                                filter_action='native',
                                page_action='none',
-                               export_format='xlsx',
+                               export_format='csv',
                                export_headers='display',
                                virtualization=True,
                                style_table={
