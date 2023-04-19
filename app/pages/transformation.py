@@ -121,9 +121,9 @@ def update_parameters_visibility(algo):
     if algo == "alpha":
         return False, True, True
     elif algo == "inductive":
-        return True, False, True
-    elif algo == "heuristic":
         return True, True, False
+    elif algo == "heuristic":
+        return True, False, True
     else:
         raise PreventUpdate("Visibility did not change.")
 
@@ -156,8 +156,6 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     if EventData.uploaded_log is None:
         EventData.uploaded_log = EventData.example_log
 
-    print(EventData.uploaded_log.head())
-
     EventData.uploaded_log["time:timestamp"] = pd.to_datetime(EventData.uploaded_log['time:timestamp'])
 
     start_time = time.perf_counter()
@@ -184,7 +182,17 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
             if min_dfg_occurrences is None or min_dfg_occurrences <= 0:
                 min_dfg_occurrences = 1
 
-            process_model, start, end = pm4py.discover_petri_net_heuristics(EventData.uploaded_log, dependency_threshold, and_threshold, loop_two_threshold, min_act_count, min_dfg_occurrences)
+            process_model, start, end = pm4py.discover_petri_net_heuristics(
+                EventData.uploaded_log,
+                dependency_threshold,
+                and_threshold=and_threshold,
+                loop_two_threshold=loop_two_threshold,
+                #min_act_count=min_act_count,
+                #min_dfg_occurrences=min_dfg_occurrences,
+                activity_key="concept:name",
+                timestamp_key="time:timestamp",
+                case_id_key="case:concept:name"
+                )
         else:
             logging.error("Algorithm is not chosen")
             return no_update, False, True, no_update, no_update
@@ -196,13 +204,15 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
     mining_duration = "mining duration: "+ str(round(mining_duration,2)) + "s"
     logging.info(f"[{algo}] {mining_duration}")
 
+    bpmn = pm4py.convert_to_bpmn(process_model, start, end)
+
+
     try:
         pt = pm4py.convert_to_process_tree(process_model, start, end)
-        bpmn = pm4py.convert_to_bpmn(process_model, start, end)
     except Exception as e:
+        pt = None
+        logging.error(type(e).__name__ + " while converting process model to process tree: " + str(e))
 
-        logging.error(type(e).__name__ + " while converting process model: " + str(e))
-        return no_update, False, True, no_update, no_update
 
     timestr = time.strftime("%Y%m%d-%H%M%S")
 
@@ -227,7 +237,9 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
         pm4py.save_vis_dfg(dfg, sa, ea, dfg_file_path)
         pm4py.save_vis_petri_net(process_model, start, end, pn_file_path)
         pm4py.save_vis_bpmn(bpmn, bpmn_file_path)
-        pm4py.save_vis_process_tree(pt, pt_file_path)
+
+        if pt is not None:
+            pm4py.save_vis_process_tree(pt, pt_file_path)
     except Exception as e:
         logging.error(type(e).__name__ + " while saving process model: " + str(e))
 
