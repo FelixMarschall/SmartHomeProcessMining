@@ -25,6 +25,19 @@ PATH_IMAGES = PATH_ASSETS + "images/"
 layout = html.Div([
     html.H1('Transformation'),
     html.Hr(),
+    html.Div(children=[
+    'Choose data source',
+    dcc.Dropdown(
+        id='data-source-dropdown',
+        options=["home-assistant","uploaded event log"],
+        clearable=False,
+        style={
+        'width': '50%',
+        'margin': '10px'
+        }
+    )
+    ]),
+    html.Hr(),
     ### Transformation
     html.Div(children='Choose your favorite algorithmn and set parameters!'),
     dcc.Dropdown(
