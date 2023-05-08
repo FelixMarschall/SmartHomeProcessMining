@@ -83,6 +83,7 @@ layout = html.Div([
         hidden=True
     ),
     html.Hr(),
+
     html.Button('Start mining', id='mine-button', 
                     style=components.get_button_style()),
     html.Div(id='mining-duration'),

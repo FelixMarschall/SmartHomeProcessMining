@@ -10,6 +10,7 @@ def get_layout() -> dbc.Container:
                 sidebar,
             ),
         dcc.Store(id='image_file_name', storage_type='session'),
+        dcc.Store(id='transformation_parameters', storage_type='session'),
         dash.page_container,
         ]))
 
