@@ -1,5 +1,6 @@
 import dash
 import pandas as pd
+import dateutil.tz
 import time
 import logging
 
@@ -173,7 +174,8 @@ def fetch_logbook(value, start_date, end_date, time_range_slider, weekday_checkl
     
     # rename dataframe col when to timestamp
     df.rename(columns={"when": "timestamp"}, inplace=True)
-    df.timestamp = pd.to_datetime(df.timestamp, utc=True)
+    local_tz = dateutil.tz.tzlocal()
+    df.timestamp = pd.to_datetime(df.timestamp).dt.tz_convert(local_tz)
 
     # apply timerange filter
     if not (time_range_slider[0]==0 and time_range_slider[1]==24):

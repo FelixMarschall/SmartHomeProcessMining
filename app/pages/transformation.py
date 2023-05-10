@@ -303,7 +303,7 @@ def update_transformation(value, algo, data_source, noise_threshold, dependency_
             logging.error("Algorithm is not chosen")
             return no_update, False, True, no_update, no_update
     except Exception as e:
-        logging.error(f"Mining went wrong on activity[{activity}], case_id[{case_id}], timestamp[{timestamp}]: {e}")
+        logging.error(f"Mining went wrong: {e}")
         return no_update, False, True, no_update, no_update
 
     mining_duration = time.perf_counter() - start_time
