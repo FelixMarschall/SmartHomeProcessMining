@@ -6,11 +6,9 @@ import dash_bootstrap_components as dbc
 def get_layout() -> dbc.Container:
     sidebar = get_sidebar()
     return dbc.Container(
-        html.Div(children=[html.Div(
-                sidebar,
-            ),
+        html.Div(children=[
+        sidebar,
         dcc.Store(id='image_file_name', storage_type='session'),
-        dcc.Store(id='transformation_parameters', storage_type='session'),
         dash.page_container,
         ]))
 
@@ -28,3 +26,4 @@ def get_sidebar() -> dbc.Nav:
     ], 
     pills=True,
     fill=True)
+    

@@ -29,13 +29,43 @@ layout = html.Div([
     'Choose data source',
     dcc.Dropdown(
         id='data-source-dropdown',
-        options=["home-assistant","uploaded event log"],
         clearable=False,
         style={
         'width': '50%',
         'margin': '10px'
-        }
-    )
+        },
+        persistence = True,
+    ),
+    html.P('Activity column:'),
+    dcc.Dropdown(
+        id="activity-dropdown",
+        clearable=False,
+        style={
+        'width': '50%',
+        'margin': '10px'
+        },
+        persistence = True,
+    ),
+    html.P('Case ID column:'),
+    dcc.Dropdown(
+        id="case-id-dropdown",
+        clearable=False,
+        style={
+        'width': '50%',
+        'margin': '10px'
+        },
+        persistence = True,
+    ),
+    html.P('Timestamp column:'),
+    dcc.Dropdown(
+        id="timestamp-dropdown",
+        clearable=False,
+        style={
+        'width': '50%',
+        'margin': '10px'
+        },
+        persistence = True,
+    ),
     ]),
     html.Hr(),
     ### Transformation
@@ -48,7 +78,9 @@ layout = html.Div([
     style={
         'width': '50%',
         'margin': '10px'
-    }),
+    },
+    persistence = True
+),
     dcc.Loading(
             id="loading-1",
             type="circle",
@@ -59,26 +91,26 @@ layout = html.Div([
     html.Div(id='inductive-parameters', children=
         [
             html.Label('Noise Threshold', style=transformation_components.get_parameter_input_style()),
-            dcc.Input(id='noise_threshold', type='number', min=0.0, max=1.0, step=0.1, value=0.0),
+            dcc.Input(id='noise_threshold', type='number', min=0.0, max=1.0, step=0.1, value=0.0, persistence=True),
         ],
         hidden=True
     ),
     html.Div(id='heuristic-parameters', children=
         [
             html.Label('Dependency Threshold', style=transformation_components.get_parameter_input_style()),
-            dcc.Input(id='dependency_threshold', type='number', min=0.0, max=1.0, step=0.1, value=0.5), #float
+            dcc.Input(id='dependency_threshold', type='number', min=0.0, max=1.0, step=0.1, value=0.5, persistence=True), #float
 
             html.Label('AND Threshold', style=transformation_components.get_parameter_input_style()), 
-            dcc.Input(id='and_threshold', type='number', min=0.0, max=1.0, step=0.1, value=0.5), #float
+            dcc.Input(id='and_threshold', type='number', min=0.0, max=1.0, step=0.1, value=0.5, persistence=True), #float
             
             html.Label('Loop Two Threshold', style=transformation_components.get_parameter_input_style()),
-            dcc.Input(id='loop_two_threshold', type='number', min=0.0, max=1.0, step=0.1, value=0.5), #float
+            dcc.Input(id='loop_two_threshold', type='number', min=0.0, max=1.0, step=0.1, value=0.5, persistence=True), #float
 
             html.Label('min act count', style=transformation_components.get_parameter_input_style()),
-            dcc.Input(id='min_act_count', type='number', min=1, step=1, value=1, pattern=u"^[0-9]\d*$"), # int
+            dcc.Input(id='min_act_count', type='number', min=1, step=1, value=1, pattern=u"^[0-9]\d*$", persistence=True), # int
 
             html.Label('min dfg occurrences', style=transformation_components.get_parameter_input_style()),
-            dcc.Input(id='min_dfg_occurrences', type='number', min=1, step=1, value=1, pattern=u"^[0-9]\d*$"), # int
+            dcc.Input(id='min_dfg_occurrences', type='number', min=1, step=1, value=1, pattern=u"^[0-9]\d*$", persistence=True), # int
         ],
         hidden=True
     ),
@@ -105,8 +137,19 @@ layout = html.Div([
              children=[
                 html.Hr(),
                 html.H2('Directly-follows graph'),
-                html.P("Graph is not influenced by the transformation algorithm or the parameters above."),
-                html.Img(id= "dfg", alt="DfG Image", style={'width':'100%'}),
+                dbc.Button(
+                    "Collapse/Expand",
+                    id="collapse-button",
+                    className="me-1",
+                    color="secondary",
+                    n_clicks=0
+                ),
+                dbc.Collapse(
+                    [html.P("Graph is not influenced by the transformation algorithm or the parameters above."),
+                    html.Img(id= "dfg", alt="DfG Image", style={'width':'100%'}),],
+                id="collapse",
+                is_open=True,
+                ),   
                 html.Hr(),
                 html.H2('Petri Net'),
                 html.Img(id= "petrinet", alt="Petri Net Image", style={'width':'100%'}),
@@ -120,6 +163,43 @@ layout = html.Div([
     ]
     ),
 ])
+
+@callback(
+    Output("data-source-dropdown", "options"),
+    Output("activity-dropdown", "options"),
+    Output("case-id-dropdown", "options"),
+    Output("timestamp-dropdown", "options"),
+    Input("data-source-dropdown", "value"),
+    prevent_initial_call=False
+)
+def update_datasource_dropdown(data_source):
+    # check if data is available
+    options = []
+    logbook_is_available = EventData.logbook is not None
+    uploaded_log_is_available = EventData.uploaded_log is not None
+
+    options = [
+            {"label": "Uploaded Event Log","value": "uploaded_log", "disabled": not uploaded_log_is_available},
+            {"label": "Home Assistant","value": "home-assistant", "disabled": not logbook_is_available},
+            {"label": "Example Logbook","value": "example"},
+            ]
+        
+    if data_source == "home-assistant" and logbook_is_available:
+        activity_options = list(EventData.logbook.columns)
+        case_id_options = list(EventData.logbook.columns)
+        timestamp_options = list(EventData.logbook.columns)
+    elif data_source == "uploaded_log" and uploaded_log_is_available:
+        activity_options = list(EventData.uploaded_log.columns)
+        case_id_options = list(EventData.uploaded_log.columns)
+        timestamp_options = list(EventData.uploaded_log.columns)
+    elif data_source == "example":
+        activity_options = list(EventData.example_log.columns)
+        case_id_options = list(EventData.example_log.columns)
+        timestamp_options = list(EventData.example_log.columns)
+    else:
+        return options, no_update, no_update, no_update
+
+    return options, activity_options, case_id_options, timestamp_options
 
 
 ### Hide/Show Parameters for Transformation Algorithms
@@ -150,39 +230,57 @@ def update_parameters_visibility(algo):
     Output('loading-1', 'children'),
     Input('mine-button', 'n_clicks'),
     State('algo-dropdown', 'value'),
+    State('data-source-dropdown', 'value'),
     # inductive algo
     State('noise_threshold', 'value'),
     # heuristc algo
     State('dependency_threshold', 'value'), #float
     State('and_threshold', 'value'), #float
     State('loop_two_threshold', 'value'), #int
-    State('min_act_count', 'value'), #int
-    State('min_dfg_occurrences', 'value'), #int
+    # mining columns
+    State('activity-dropdown', 'value'),
+    State('case-id-dropdown', 'value'),
+    State('timestamp-dropdown', 'value'),
     prevent_initial_call=True
 )
-def update_transformation(value, algo, noise_threshold, dependency_threshold, and_threshold, loop_two_threshold, min_act_count, min_dfg_occurrences):
+def update_transformation(value, algo, data_source, noise_threshold, dependency_threshold, and_threshold, loop_two_threshold, activity, case_id, timestamp):
     """Calles when transformation button is clicked."""
     logging.debug(f"Callback 'start mining' button with value: {value} and algo: {algo}")
 
     if value is None:
         raise PreventUpdate("Nothing clicked")
 
-    if EventData.uploaded_log is None:
-        EventData.uploaded_log = EventData.example_log
+    if data_source == "home-assistant":
+        logbook_temp = EventData.logbook
+    else:
+        logbook_temp = EventData.uploaded_log
 
-    EventData.uploaded_log["time:timestamp"] = pd.to_datetime(EventData.uploaded_log['time:timestamp'])
+    if logbook_temp is None:
+        logbook_temp = EventData.example_log
+
+    logbook_temp[timestamp] = pd.to_datetime(logbook_temp[timestamp])
 
     start_time = time.perf_counter()
     try:
-        dfg, sa, ea = pm4py.discover_dfg(EventData.uploaded_log)
+        dfg, sa, ea = pm4py.discover_dfg(logbook_temp, activity_key=activity, case_id_key=case_id, timestamp_key=timestamp)
         if algo == "alpha":
-            process_model, start, end = pm4py.discover_petri_net_alpha(EventData.uploaded_log)
+            process_model, start, end = pm4py.discover_petri_net_alpha(
+                log=logbook_temp,
+                activity_key=activity,
+                timestamp_key=timestamp,
+                case_id_key=case_id)
         elif algo == "inductive":
             if noise_threshold is None or noise_threshold > 1 or noise_threshold < 0:
                 noise_threshold = 0.0
                 logging.debug("Noise threshold is not set or not in range [0,1], using default value 0.0")
 
-            process_model, start, end = pm4py.discover_petri_net_inductive(EventData.uploaded_log, noise_threshold)
+            process_model, start, end = pm4py.discover_petri_net_inductive(
+                log=logbook_temp,
+                noise_threshold=noise_threshold,
+                activity_key=activity,
+                timestamp_key=timestamp,
+                case_id_key=case_id
+                )
         elif algo == "heuristic":
             # check values and set to pm4py default values if not in range [0,1]
             if dependency_threshold is None or dependency_threshold > 1 or dependency_threshold < 0:
@@ -191,27 +289,21 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
                 and_threshold = 0.65
             if loop_two_threshold is None or loop_two_threshold > 1 or loop_two_threshold < 0:
                 loop_two_threshold = 0.5
-            if min_act_count is None or min_act_count <= 0:
-                min_act_count = 1
-            if min_dfg_occurrences is None or min_dfg_occurrences <= 0:
-                min_dfg_occurrences = 1
-
+            
             process_model, start, end = pm4py.discover_petri_net_heuristics(
-                EventData.uploaded_log,
-                dependency_threshold,
+                log=logbook_temp,
+                dependency_threshold=dependency_threshold,
                 and_threshold=and_threshold,
                 loop_two_threshold=loop_two_threshold,
-                #min_act_count=min_act_count,
-                #min_dfg_occurrences=min_dfg_occurrences,
-                activity_key="concept:name",
-                timestamp_key="time:timestamp",
-                case_id_key="case:concept:name"
+                activity_key=activity,
+                timestamp_key=timestamp,
+                case_id_key=case_id
                 )
         else:
             logging.error("Algorithm is not chosen")
             return no_update, False, True, no_update, no_update
     except Exception as e:
-        logging.error(f"Mining went wrong: {e}")
+        logging.error(f"Mining went wrong on activity[{activity}], case_id[{case_id}], timestamp[{timestamp}]: {e}")
         return no_update, False, True, no_update, no_update
 
     mining_duration = time.perf_counter() - start_time
@@ -220,13 +312,11 @@ def update_transformation(value, algo, noise_threshold, dependency_threshold, an
 
     bpmn = pm4py.convert_to_bpmn(process_model, start, end)
 
-
     try:
         pt = pm4py.convert_to_process_tree(process_model, start, end)
     except Exception as e:
         pt = None
         logging.error(type(e).__name__ + " while converting process model to process tree: " + str(e))
-
 
     timestr = time.strftime("%Y%m%d-%H%M%S")
 
@@ -285,3 +375,13 @@ def update_graphs(ts, image_file_name):
         raise PreventUpdate()
     
     return dash.get_asset_url(image_file_name["dfg"]),dash.get_asset_url(image_file_name["petri"]),dash.get_asset_url(image_file_name["bpmn"]),dash.get_asset_url(image_file_name["tree"])
+
+@callback(
+    Output("collapse", "is_open"),
+    Input("collapse-button", "n_clicks"),
+    State("collapse", "is_open"),
+)
+def toggle_collapse(n, is_open):
+    if n:
+        return not is_open
+    return is_open
