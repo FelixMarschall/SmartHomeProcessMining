@@ -17,4 +17,5 @@ pm4py==2.7.4
 pyarrow==12.0.0
 PyYAML==6.0
 requests==2.30.0
+setuptools==67.7.2
 gevent==22.10.2
