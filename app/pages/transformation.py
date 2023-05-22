@@ -26,47 +26,51 @@ layout = html.Div([
     html.H1('Transformation'),
     html.Hr(),
     html.Div(children=[
-    'Choose data source',
-    dcc.Dropdown(
-        id='data-source-dropdown',
-        clearable=False,
-        style={
-        'width': '50%',
-        'margin': '10px'
-        },
-        persistence = True,
-    ),
-    html.P('Activity column:'),
-    dcc.Dropdown(
-        id="activity-dropdown",
-        clearable=False,
-        style={
-        'width': '50%',
-        'margin': '10px'
-        },
-        persistence = True,
-    ),
-    html.P('Case ID column:'),
-    dcc.Dropdown(
-        id="case-id-dropdown",
-        clearable=False,
-        style={
-        'width': '50%',
-        'margin': '10px'
-        },
-        persistence = True,
-    ),
-    html.P('Timestamp column:'),
-    dcc.Dropdown(
-        id="timestamp-dropdown",
-        clearable=False,
-        style={
-        'width': '50%',
-        'margin': '10px'
-        },
-        persistence = True,
-    ),
-    ]),
+        html.Div(
+        children=[
+            'Choose data source',
+            dcc.Dropdown(
+                id='data-source-dropdown',
+                clearable=False,
+                style={
+                'width': '50%',
+                'margin': '10px'
+                },
+                persistence = True,
+            ),
+            html.P('Activity column:'),
+            dcc.Dropdown(
+                id="activity-dropdown",
+                clearable=False,
+                style={
+                'width': '50%',
+                'margin': '10px'
+                },
+                persistence = True,
+            ),
+            html.P('Case ID column:'),
+            dcc.Dropdown(
+                id="case-id-dropdown",
+                clearable=False,
+                style={
+                'width': '50%',
+                'margin': '10px'
+                },
+                persistence = True,
+            ),
+            html.P('Timestamp column:'),
+            dcc.Dropdown(
+                id="timestamp-dropdown",
+                clearable=False,
+                style={
+                'width': '50%',
+                'margin': '10px'
+                },
+                persistence = True,
+            ),
+            ], 
+            ),
+        ]),
     html.Hr(),
     ### Transformation
     html.Div(children='Choose your favorite algorithmn and set parameters!'),
@@ -302,7 +306,7 @@ def update_transformation(value, algo, data_source, noise_threshold, dependency_
         else:
             logging.error("Algorithm is not chosen")
             return no_update, False, True, no_update, no_update
-    except Exception as e:
+    except ConnectionError as e:
         logging.error(f"Mining went wrong: {e}")
         return no_update, False, True, no_update, no_update
 
@@ -316,7 +320,7 @@ def update_transformation(value, algo, data_source, noise_threshold, dependency_
         pt = pm4py.convert_to_process_tree(process_model, start, end)
     except Exception as e:
         pt = None
-        logging.error(type(e).__name__ + " while converting process model to process tree: " + str(e))
+        logging.error(type(e).__name__ + " converting process model to process tree: " + str(e))
 
     timestr = time.strftime("%Y%m%d-%H%M%S")
 

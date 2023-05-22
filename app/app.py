@@ -4,6 +4,8 @@ import logging
 # imports for web app
 import dash
 import dash_bootstrap_components as dbc
+from gevent.pywsgi import WSGIServer
+
 
 # own modules
 from homeassistant import Api
@@ -48,5 +50,8 @@ if __name__ == "__main__":
     if os.path.isfile('app/assets/temp/uploaded.feather'):
         os.remove('app/assets/temp/uploaded.feather')
 
-    logging.info("Starting dash server...")
-    App.app.run_server(debug=True, host="0.0.0.0")
+    #App.app.run_server(debug=False, host="0.0.0.0")
+
+    logging.info("Starting WSGI server...")
+    server = WSGIServer(('0.0.0.0', 8050), App.app.server)
+    server.serve_forever()
