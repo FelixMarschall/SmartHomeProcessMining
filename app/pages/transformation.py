@@ -38,7 +38,7 @@ layout = html.Div([
                 },
                 persistence = True,
             ),
-            html.P('Activity column:'),
+            html.P('Activity column (e.g. "concept:name" or "name_state_id")'),
             dcc.Dropdown(
                 id="activity-dropdown",
                 clearable=False,
@@ -48,7 +48,7 @@ layout = html.Div([
                 },
                 persistence = True,
             ),
-            html.P('Case ID column:'),
+            html.P('Case ID column (e.g. "case:concept:name" or "single_day_id_H")'),
             dcc.Dropdown(
                 id="case-id-dropdown",
                 clearable=False,
@@ -110,11 +110,11 @@ layout = html.Div([
             html.Label('Loop Two Threshold', style=transformation_components.get_parameter_input_style()),
             dcc.Input(id='loop_two_threshold', type='number', min=0.0, max=1.0, step=0.1, value=0.5, persistence=True), #float
 
-            html.Label('min act count', style=transformation_components.get_parameter_input_style()),
-            dcc.Input(id='min_act_count', type='number', min=1, step=1, value=1, pattern=u"^[0-9]\d*$", persistence=True), # int
+            #html.Label('min act count', style=transformation_components.get_parameter_input_style()),
+            #dcc.Input(id='min_act_count', type='number', min=1, step=1, value=1, pattern=u"^[0-9]\d*$", persistence=True), # int
 
-            html.Label('min dfg occurrences', style=transformation_components.get_parameter_input_style()),
-            dcc.Input(id='min_dfg_occurrences', type='number', min=1, step=1, value=1, pattern=u"^[0-9]\d*$", persistence=True), # int
+            #html.Label('min dfg occurrences', style=transformation_components.get_parameter_input_style()),
+            #dcc.Input(id='min_dfg_occurrences', type='number', min=1, step=1, value=1, pattern=u"^[0-9]\d*$", persistence=True), # int
         ],
         hidden=True
     ),
