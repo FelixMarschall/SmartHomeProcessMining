@@ -50,7 +50,7 @@ if __name__ == "__main__":
     if os.path.isfile('app/assets/temp/uploaded.feather'):
         os.remove('app/assets/temp/uploaded.feather')
 
-    #App.app.run_server(debug=False, host="0.0.0.0")
+    #App.app.run_server(debug=True, host="0.0.0.0")
 
     logging.info("Starting WSGI server...")
     server = WSGIServer(('0.0.0.0', 8050), App.app.server)

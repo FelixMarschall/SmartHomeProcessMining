@@ -106,13 +106,44 @@ layout = html.Div([
     html.Div(id = "quickstats"),
     html.Div(id ="logbook-data", children=[
         html.Div(id="info-field", children='Nothing fetched...'),
-    ])
+    ],
+    ),
+    html.Hr(),
+    ### Filter entities ###
+    html.H3('Filter entities'),
+    html.Div(children=[
+        "Choose entities which should be included (Filter function)",
+        html.Br(),
+        # daq.BooleanSwitch(
+        # id='is_filter_entities',
+        # label="Filter entities",
+        # labelPosition="top",
+        # on=True,
+        # persistence=True,
+        # style={'display': 'inline-block', 'margin-left': '15px'},
+        # ),
+        dbc.Button(
+            "Invert selection",
+            id="invert-selection-button",
+            className="me-1",
+            color="secondary",
+        ),
+        html.Br(),
+        dcc.Checklist(
+            id="entities-checklist",
+            labelStyle={'margin': '10px'},
+            persistence=True,
+            options=[],
+        ),
+        html.Br(),
+        html.Button('Filter', id='filter-entities', style=components.get_button_style()),
+        ]),
 ])
 
 @callback(
-    Output("logbook-data", "children"),
-    Output("fetch_duration", "children"),
-    Output("quickstats", "children"),
+    Output("logbook-data", "children", allow_duplicate=True),
+    Output("fetch_duration", "children", allow_duplicate=True),
+    Output("quickstats", "children", allow_duplicate=True),
     Output("alert-fetch-succ","is_open"),
     Output("alert-fetch-fail","is_open"),
     Output("alert-fetch-error","is_open"),
@@ -124,7 +155,7 @@ layout = html.Div([
     State('weekday-checklist', 'value'),
     State('delete_update_entries', 'on'),
     State('create_help_columns', 'on'),
-    prevent_initial_call=False
+    prevent_initial_call="initial_duplicate"
 )
 def fetch_logbook(value, start_date, end_date, time_range_slider, weekday_checklist, delete_update_entries, create_help_columns):
     '''Fetches homeassistant logbook and prints in table'''
@@ -201,12 +232,78 @@ def fetch_logbook(value, start_date, end_date, time_range_slider, weekday_checkl
         df["state"].astype(str).fillna("",inplace=True)
         df.insert(3, "name_state_H", df["entity_id"].astype(str) + "_" + df["state"].astype(str))
 
-    EventData.logbook = df
+    EventData.logbook = df 
+    EventData.logbook_unfiltered = df
 
     quickstats = f"Logbook shape (row, cols): {df.shape}; Panda Framework size: {df_size} MB"
 
     logging.info(f"Fetched logbook in {end_time_str} with size (row, col) of {df.shape}")
     return data_components.get_logbook_table(df), end_time_str, quickstats, True, False, False, None
+
+
+@callback(
+    Output("entities-checklist", "options"),
+    Output("entities-checklist", "value"),
+    Input('logbook-data', 'children'),
+    State("entities-checklist", "value"),
+    prevent_initial_call=True
+)
+def update_entities_checklist(data, checklist_value):
+    """Updates checklist with all entities from logbook"""
+    logging.info("Updating entities checklist")
+    if EventData.logbook_unfiltered is None:
+        return []
+
+    entities = EventData.logbook_unfiltered["entity_id"].unique()
+    if checklist_value is None:
+        return [{"label": entity, "value": entity} for entity in entities], entities
+    
+    return [{"label": entity, "value": entity} for entity in entities], checklist_value
+
+@callback(
+    Output("logbook-data", "children"),
+    Output("quickstats", "children"),
+    Output("fetch_duration", "children"),
+    Input("filter-entities", "n_clicks"),
+    State("entities-checklist", "value"),
+    prevent_initial_call=True
+)
+def filter_entities(n_clicks, entities):
+    """Filters logbook for selected entities"""
+    if EventData.logbook is None:
+        return dash.no_update
+
+    if entities is None:
+        logging.info("No entities selected")
+        return dash.no_update
+
+    logging.info(f"Filtering logbook for entities: {entities}")
+    df = EventData.logbook[EventData.logbook["entity_id"].isin(entities)]
+    
+    df_size = round(df.memory_usage(index=True).sum()/(1000*1000), 2)
+    quickstats = f"Logbook shape (row, cols): {df.shape}; Panda Framework size: {df_size} MB"
+
+    return data_components.get_logbook_table(df), quickstats, None
+
+@callback(
+    Output("entities-checklist", "value", allow_duplicate=True),
+    Input("invert-selection-button", "n_clicks"),
+    State("entities-checklist", "value"),
+    prevent_initial_call=True
+)
+def invert_selection(n_clicks, entities):
+    """Inverts selection of entities"""
+    if EventData.logbook is None:
+        return dash.no_update
+
+    if entities is None:
+        logging.info("No entities selected")
+        return dash.no_update
+
+    all_entities = EventData.logbook["entity_id"].unique()
+    inverted_entities = list(set(all_entities) - set(entities))
+    logging.info(f"Inverting selection of entities: {entities}")
+    return inverted_entities
 
 @callback(
     Output('output-container-range-slider', 'children'),
