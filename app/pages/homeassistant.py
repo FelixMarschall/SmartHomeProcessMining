@@ -357,7 +357,7 @@ def update_entities_checklist(data, checklist_value):
     if EventData.logbook_unfiltered is None:
         return []
 
-    entities = EventData.logbook_unfiltered["entity_id"].unique()
+    entities = sorted(EventData.logbook_unfiltered["entity_id"].unique())
     if checklist_value is None:
         return [{"label": entity, "value": entity} for entity in entities], entities
 
@@ -407,7 +407,7 @@ def filter_entities(n_clicks, entities):
     prevent_initial_call=True,
 )
 def invert_selection(all, invert, automation, sensor, binary, switch, sun, entities):
-    """Inverts selection of entities"""
+    """selection of entities"""
     if EventData.logbook_unfiltered is None:
         return dash.no_update
 
