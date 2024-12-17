@@ -1,7 +1,7 @@
 dash==2.13.0
 dash_bootstrap_components==1.4.2
 dash_daq==0.5.0
-gevent==23.7.0
+gevent==23.9.0
 pandas==2.1.0
 plotly==5.16.1
 pm4py==2.7.5.2
